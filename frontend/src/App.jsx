@@ -1,13 +1,11 @@
-import { useState } from 'react'
-import './App.css'
+import "./App.css";
 
 function App() {
-
   return (
     <>
-      Home page
+      <h1 className="text-3xl font-bold underline">Hello Employments!</h1>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
