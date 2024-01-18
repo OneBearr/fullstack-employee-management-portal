@@ -10,7 +10,7 @@ export default function ErrorPage() {
         title="Oops, something went wrong!"
         extra={
           <Link to="/">
-            <Button type="primary" className="bg-blue-600">Go Home</Button>
+            <Button type="primary">Go Home</Button>
           </Link>
         }
       />

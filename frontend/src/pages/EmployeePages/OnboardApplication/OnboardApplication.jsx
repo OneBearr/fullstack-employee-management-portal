@@ -194,7 +194,7 @@ export default function OnboardApplication() {
                         shouldUpdate={(prevValues, currentValues) => prevValues.workAuthorization !== currentValues.workAuthorization
                             || prevValues.usResidentOrCitizen !== currentValues.usResidentOrCitizen}
                         noStyle
-                    >   
+                    >
                         {({ getFieldValue }) => {
                             if (getFieldValue('usResidentOrCitizen') === 'no' && getFieldValue('workAuthorization') === 'F1CPTOPT') {
                                 return (
@@ -306,7 +306,7 @@ export default function OnboardApplication() {
                     </Form.Item>
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" className="bg-blue-600">
+                        <Button type="primary" htmlType="submit">
                             Submit
                         </Button>
                     </Form.Item>

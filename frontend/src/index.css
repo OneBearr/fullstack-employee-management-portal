@@ -24,3 +24,7 @@
   height: 100%;
   overflow: auto; */
 }
+
+.ant-btn-primary {
+  background-color: #1677ff;
+}
