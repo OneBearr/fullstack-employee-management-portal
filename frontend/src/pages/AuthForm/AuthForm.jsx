@@ -11,8 +11,17 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 const AuthForm = (props) => {
     const { type } = props;
     const [form] = Form.useForm();
+    const navigate = useNavigate();
+
     const onFinish = async (values) => {
         console.log("Received values of form: ", values);
+        const { username, password } = values;
+
+        if (type === 'login') {
+            if (username === 'ethan' && password === '123') {
+                navigate("/employee-dashboard");
+            }
+        }
     };
     return (
         <div id="content" className="flex items-center justify-center w-full">
@@ -78,7 +87,7 @@ const AuthForm = (props) => {
                     <Button
                         type="primary"
                         htmlType="submit"
-                        className="w-full bg-blue-600"
+                        className="w-full"
                     >
                         {type === "login" && "Log In"}
                         {type === "register" && "Register"}

@@ -13,19 +13,19 @@ export default function NavMenu() {
     const menuItems = [
         {
             key: 'home',
-            label: <Link to="/">Home Page</Link>,
+            label: <Link to="/employee-dashboard">My Home Page</Link>,
         },
         {
             key: 'personalInfo',
-            label: <Link to="/personal-info">Personal Information</Link>,
+            label: <Link to="/employee-dashboard/personal-info">Personal Information</Link>,
         },
         {
             key: 'visaStatus',
-            label: <Link to="/visa-status">Visa Status Management</Link>,
+            label: <Link to="/employee-dashboard/visa-status">Visa Status Management</Link>,
         },
         {
             key: 'onboarding',
-            label: <Link to="/onboarding">Onboarding Application</Link>,
+            label: <Link to="/employee-dashboard/onboarding">Onboarding Application</Link>,
         },
     ];
 

@@ -11,7 +11,7 @@ export default function Header() {
       <div className="flex items-center gap-x-3">
         <UserOutlined />
         <Link to="/login">
-          Sign In
+          Log In
         </Link>
         {/* <p>Sign In</p> */}
       </div>
