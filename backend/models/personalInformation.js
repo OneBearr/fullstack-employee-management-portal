@@ -43,11 +43,21 @@ const personalInformationSchema = new mongoose.Schema({
         lastName: String,
         phone: String,
         email: String,
-        relationship: String
+        relationship: String,
+        default: null
     },
     employmentDetails: {
         visaTitle: String,
         startDate: Date,
-        endDate: Date
+        endDate: Date,
+        default: null
+    },
+    onboardingInfo: {
+        status: { type: String, default: "pending" /* e.g., 'pending', 'approved', 'rejected' */ },
+        feedback: String
     }
 });
+
+const PersonalInformation = mongoose.model("PersonalInformation", personalInformationSchema);
+module.exports = PersonalInformation;
+

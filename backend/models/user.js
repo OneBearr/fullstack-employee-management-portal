@@ -59,5 +59,4 @@ const userSchema = new mongoose.Schema({
     visaStatus: { type: mongoose.Schema.Types.ObjectId, ref: "VisaStatus" },
 });
 const User = mongoose.model("User", userSchema);
-
 module.exports = User;
