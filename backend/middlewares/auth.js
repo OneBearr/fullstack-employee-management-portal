@@ -45,27 +45,7 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-const isOwner = async (req, res, next) => {
-  try {
-    const user = req.user;
-    const product = await Product.findById(req.params?.id);
-
-    console.log(`In isOwner: User id: ${user.id}, Product id: ${product.id}, Product owner: ${product?.owner}`);
-
-    if (product?.owner?.toString() !== user.id.toString()) {
-      res.status(401).json({ message: "You are not the owner of this item!" });
-      return;
-    }
-    next();
-    return;
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Server Error" });
-  }
-}
-
 module.exports = {
   authenticate,
-  isAdmin,
-  isOwner
+  isAdmin
 }

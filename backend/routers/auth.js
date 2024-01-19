@@ -35,7 +35,41 @@ async function storeToken(email, token) {
     return await registrationToken.save();
 }
 
-// /auth/login
+// /auth/signin
+router.post('/signin', async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+
+        let user = await User.findOne({ username });
+
+        if (!user) {
+            throw new APIError("This username does not exist, please signup first", 400);
+        }
+
+        if (user.password !== password) {
+            throw new APIError("Username and password do not match!", 401);
+        }
+
+        const payload = {
+            user: {
+                id: user._id
+            }
+        };
+
+        const expiration = new Date();
+        expiration.setHours(expiration.getHours() + 1); // Set expiration to 1 hour
+        const token = await jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+        });
+
+        console.log(`User:${user} login`);
+        res.json({ token, isHR: user.isHR, username: user.username, userID: user.id, email: user.email, exp: expiration });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
 // /auth/request-reset-password
 router.post("/request-register", async (req, res, next) => {
     try {
