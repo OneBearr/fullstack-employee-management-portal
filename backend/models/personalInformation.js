@@ -46,6 +46,11 @@ const personalInformationSchema = new mongoose.Schema({
         relationship: String,
         default: null
     },
+    workAuth: {
+        isCitizen: Boolean,
+        citizenType: String,
+        workAuthType: String
+    },
     employmentDetails: {
         visaTitle: String,
         startDate: Date,
