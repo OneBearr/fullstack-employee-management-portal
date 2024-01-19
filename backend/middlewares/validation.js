@@ -1,13 +1,14 @@
-const User = require('../models/User')
+const User = require('../models/user')
 
 const checkEmpty = (req, res, next) => {
     const user = req.body;
-    if (!user.username || !user.email || !user.password) {
+    if (!user.username || !user.password) {
         return res.status(400).json({ message: 'Please provide all fields' });
     }
     next();
     return;
 }
+
 const checkDuplicate = async (req, res, next) => {
     try {
         const { username, email } = req.body;
