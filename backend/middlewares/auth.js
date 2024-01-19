@@ -24,7 +24,7 @@ const authenticate = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(error);
-    return next(new APIError('Token is not valid', 401))l
+    return next(new APIError('Token is not valid', 401));
   }
 };
 
