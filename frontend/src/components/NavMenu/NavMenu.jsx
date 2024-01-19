@@ -5,7 +5,7 @@ import { Menu } from 'antd';
 
 export default function NavMenu(props) {
     const location = useLocation();
-    const [current, setCurrent] = useState('home');
+    const [current, setCurrent] = useState(null);
     const { menuItems } = props;
 
     useEffect(() => {
@@ -16,7 +16,7 @@ export default function NavMenu(props) {
             setCurrent('visaStatus');
         } else if (path.includes('/employee-dashboard/onboarding')) {
             setCurrent('onboarding');
-        } else {
+        } else if (path.includes('/employee-dashboard')) {
             setCurrent('home');
         }
     }, [location]);
