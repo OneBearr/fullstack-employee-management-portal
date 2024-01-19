@@ -1,14 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
+import { logoutUser } from "../../redux/user/userSlice";
 
 export default function Header() {
   const navigate = useNavigate();
-  const username = localStorage.getItem('username');
+  const dispatch = useDispatch();
+  const { username } = useSelector((state) => state.user.info);
 
   const handleLogout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('isHR');
-    // navigate(0);
+    dispatch(logoutUser());
   };
 
   return (
