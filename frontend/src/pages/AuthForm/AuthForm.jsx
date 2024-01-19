@@ -19,6 +19,8 @@ const AuthForm = (props) => {
 
         if (type === 'login') {
             if (username === 'ethan' && password === '123') {
+                localStorage.setItem('username', username);
+                localStorage.setItem('isHR', false);
                 navigate("/employee-dashboard");
             }
         }

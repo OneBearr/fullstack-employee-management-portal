@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { React, useEffect, useState } from 'react';
+import { Routes, Route, useNavigate } from "react-router-dom";
 import NavMenu from "../../../components/NavMenu/NavMenu";
 import EmployeeHome from "../EmployeeHome/EmployeeHome";
 import PersonalInfo from "../PersonalInfo/PersonalInfo";
@@ -9,6 +9,9 @@ import OnboardApplication from "../OnboardApplication/OnboardApplication";
 
 
 export default function EmployeeDashboard() {
+    const [userName, setUserName] = useState('');
+    const navigate = useNavigate();
+
     return (
         <div id='content' className='w-1/2'>
                 <NavMenu />
