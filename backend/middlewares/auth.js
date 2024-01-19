@@ -31,6 +31,9 @@ const authenticate = async (req, res, next) => {
 const isHR = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return next(new APIError("No such user!", 400));
+    }
     console.log(`In isHR: User id: ${user.id}`);
     req.user = user;
     if (!user.isHR) {
