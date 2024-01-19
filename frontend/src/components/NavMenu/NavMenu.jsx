@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import { Menu } from 'antd';
 
-export default function NavMenu() {
+export default function NavMenu(props) {
     const location = useLocation();
-    const [current, setCurrent] = useState(null);
+    const [current, setCurrent] = useState('home');
+    const { menuItems } = props;
 
     useEffect(() => {
         const path = location.pathname;
@@ -23,25 +24,6 @@ export default function NavMenu() {
     const onClick = (e) => {
         setCurrent(e.key);
     };
-
-    const menuItems = [
-        {
-            key: 'home',
-            label: <Link to="/employee-dashboard">My Home Page</Link>,
-        },
-        {
-            key: 'personalInfo',
-            label: <Link to="/employee-dashboard/personal-info">Personal Information</Link>,
-        },
-        {
-            key: 'visaStatus',
-            label: <Link to="/employee-dashboard/visa-status">Visa Status Management</Link>,
-        },
-        {
-            key: 'onboarding',
-            label: <Link to="/employee-dashboard/onboarding">Onboarding Application</Link>,
-        },
-    ];
 
     return (
         <div className="w-full ">
