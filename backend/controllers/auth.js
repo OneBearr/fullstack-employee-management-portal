@@ -89,7 +89,7 @@ const requestRegister = async (req, res, next) => {
         }
 
         const token = generateToken(email);
-        const registerUrl = `http://localhost:3000/auth/register/${token}`;
+        const registerUrl = `http://localhost:5173/register/${token}`;
         await storeToken(email, token);
         // send the reset password invitation email
         await transporter.sendMail({
@@ -120,7 +120,7 @@ const verifyRegistrationToken = async (req, res, next) => {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
         } catch (error) {
             console.error(error);
-            return next(new APIError("Invalid or expired token!", 401));
+            return next(new APIError("Invalid or expired token! Please ask HR for a new invitation to register.", 401));
         }
 
         const regToken = await RegistrationToken.findOne({ token, email: decoded.email });
@@ -129,13 +129,13 @@ const verifyRegistrationToken = async (req, res, next) => {
         console.log("3: " + (regToken.expiration < new Date()));
         if (!regToken || regToken.used || regToken.expiration < new Date()) {
 
-            return next(new APIError("Invalid or expired token.", 401));
+            return next(new APIError("Invalid or expired token! Please ask HR for a new invitation to register.", 401));
         }
 
         regToken.used = true;
         await regToken.save();
 
-        req.body.email = decoded.email;
+        // req.body.email = decoded.email;
 
         return next();
     } catch (error) {
