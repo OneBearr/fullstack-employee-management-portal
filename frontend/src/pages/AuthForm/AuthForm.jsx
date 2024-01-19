@@ -5,21 +5,30 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { fetchUserInfo } from '../../redux/user/userSlice';
 
 const AuthForm = (props) => {
     const { type } = props;
+    const { token } = useParams();
     const [form] = Form.useForm();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { isHR } = useSelector((state) => state.user.info);
 
     const onFinish = async (values) => {
         console.log("Received values of form: ", values);
         const { username, password } = values;
 
         if (type === 'login') {
-            if (username === 'ethan' && password === '123') {
-                navigate("/employee-dashboard");
+            try {
+                await dispatch(fetchUserInfo({username, password})).unwrap();
+                if (!isHR) navigate("/employee-dashboard");
+                // else go to HR dashboard
+            } catch (error) {
+                alert(error.message);
             }
         }
     };
