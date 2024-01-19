@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Product = require('../models/Product')
+const User = require('../models/user');
+const APIError = require('../errors');
 
 const authenticate = async (req, res, next) => {
   // Get token from header
@@ -12,7 +12,7 @@ const authenticate = async (req, res, next) => {
 
   // Check if token exists
   if (!token) {
-    return res.status(401).json({ message: 'No token, authorization denied' });
+    return next(new APIError('No token, authorization denied', 401));
   }
   try {
     // Verify token
@@ -23,49 +23,32 @@ const authenticate = async (req, res, next) => {
 
     next();
   } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
+    console.error(error);
+    return next(new APIError('Token is not valid', 401));
   }
 };
 
-const isAdmin = async (req, res, next) => {
+const isHR = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
-    console.log(`In isAdmin: User id: ${user.id}`);
+    if (!user) {
+      return next(new APIError("No such user!", 400));
+    }
+    console.log(`In isHR: User id: ${user.id}`);
     req.user = user;
-    if (!user.isAdmin) {
-      res.status(401).json({ message: "You are not an Admin!" });
-      return;
+    if (!user.isHR) {
+      return next(new APIError("You are not an HR!", 401));
     }
 
     next();
     return;
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Server Error" });
+    console.error(error);
+    return next(new APIError(error.message, 500));
   }
 };
-
-const isOwner = async (req, res, next) => {
-  try {
-    const user = req.user;
-    const product = await Product.findById(req.params?.id);
-
-    console.log(`In isOwner: User id: ${user.id}, Product id: ${product.id}, Product owner: ${product?.owner}`);
-
-    if (product?.owner?.toString() !== user.id.toString()) {
-      res.status(401).json({ message: "You are not the owner of this item!" });
-      return;
-    }
-    next();
-    return;
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Server Error" });
-  }
-}
 
 module.exports = {
   authenticate,
-  isAdmin,
-  isOwner
+  isHR
 }
