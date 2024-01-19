@@ -15,7 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<WelcomeChuwa />} />
           <Route path="/login" element={<AuthForm type="login" />} />
-          <Route path="/register" element={<AuthForm type="register" />} />
+          <Route path="/register/:token" element={<AuthForm type="register" />} />
           <Route path="/employee-dashboard/*" element={<EmployeeDashboard />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
