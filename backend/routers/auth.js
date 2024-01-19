@@ -7,6 +7,8 @@ const path = require("path");
 const envPath = path.join(__dirname, "../.env");
 const User = require('../models/user');
 const RegistrationToken = require('../models/registrationToken');
+const { authenticate, isHR } = require('../middlewares/auth');
+
 require('dotenv').config({ path: envPath });
 // configure the reset password invitation email
 const transporter = nodemailer.createTransport({
@@ -57,9 +59,10 @@ router.post('/signin', async (req, res, next) => {
         };
 
         const expiration = new Date();
-        expiration.setHours(expiration.getHours() + 1); // Set expiration to 1 hour
+        //expiration.setHours(expiration.getHours() + 1); // Set expiration to 1 hour
+        expiration.setDate(expiration.getDate() + 30);
         const token = await jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '1h'
+            expiresIn: '30d'
         });
 
         console.log(`User:${user} login`);
@@ -70,8 +73,8 @@ router.post('/signin', async (req, res, next) => {
     }
 });
 
-// /auth/request-reset-password
-router.post("/request-register", async (req, res, next) => {
+// /auth/request-register
+router.post("/request-register", authenticate, isHR, async (req, res, next) => {
     try {
         const { email } = req.body;
         const user = await User.findOne({ email });
