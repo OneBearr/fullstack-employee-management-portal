@@ -4,11 +4,12 @@ import {
     CloseOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchUserInfo } from '../../redux/user/userSlice';
+import { registerUser } from '../../services/register';
 
 const AuthForm = (props) => {
     const { type } = props;
@@ -24,13 +25,23 @@ const AuthForm = (props) => {
 
         if (type === 'login') {
             try {
-                await dispatch(fetchUserInfo({username, password})).unwrap();
+                await dispatch(fetchUserInfo({ username, password })).unwrap();
                 if (!isHR) navigate("/employee-dashboard");
                 // else go to HR dashboard
             } catch (error) {
                 alert(error.message);
             }
+        } else if (type === "register") {
+            const { email } = values;
+            try {
+                await registerUser(username, password, email, token);
+                message.success('Employee created successfully, redirecting to the login page.');
+                navigate("/login");
+            } catch (error) {
+                alert(error.message);
+            }
         }
+        form.resetFields();     // reset form inputs
     };
     return (
         <div id="content" className="flex items-center justify-center w-full">
