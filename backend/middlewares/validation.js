@@ -2,7 +2,7 @@ const User = require('../models/user')
 
 const checkEmpty = (req, res, next) => {
     const user = req.body;
-    if (!user.username || !user.password) {
+    if (!user.username || !user.password || !user.email) {
         return res.status(400).json({ message: 'Please provide all fields' });
     }
     next();
@@ -25,7 +25,7 @@ const checkDuplicate = async (req, res, next) => {
         next();
         return;
     } catch (error) {
-        console.error(err.message);
+        console.error(error.message);
         res.status(500).json({ message: 'Server Error' });
     }
 }
@@ -39,7 +39,7 @@ const checkIfEmailExist = async (req, res, next) => {
         next();
         return;
     } catch (error) {
-        console.error(err.message);
+        console.error(error.message);
         res.status(500).json({ message: 'Server Error' });
     }
 }

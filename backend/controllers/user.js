@@ -18,7 +18,7 @@ const getAllUsers = async (req, res, next) => {
     try {
         const users = await User.find();
         return res.status(200).json(users);
-    } catch (err) {
+    } catch (error) {
         console.error(error);
         return next(new APIError(error.message, 500));
     }

@@ -4,6 +4,7 @@ const fileSchema = new mongoose.Schema({
     fileType: String, // e.g., 'profile_picture', 'visa_document', 'onboarding_document'
     fileName: String,
     filePath: String,
+    access: String,
     uploadDate: { type: Date, default: Date.now }
 });
 
