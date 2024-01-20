@@ -8,7 +8,8 @@ const port = 3000;
 
 const authRouter = require('./routers/auth');
 const userRouter = require('./routers/user');
-const applicationRouter = require('./routers/application')
+const applicationRouter = require('./routers/application');
+const uploadRouter = require('./routers/upload');
 
 connectDB();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/api/applications', applicationRouter);
 app.use('/api/users', userRouter);
+app.use('/api/upload', uploadRouter);
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');
