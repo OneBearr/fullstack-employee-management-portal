@@ -8,7 +8,11 @@ const port = 3000;
 
 const authRouter = require('./routers/auth');
 const userRouter = require('./routers/user');
-const applicationRouter = require('./routers/application')
+const applicationRouter = require('./routers/application');
+const uploadRouter = require('./routers/upload');
+const downloadRouter = require('./routers/download');
+const hrDownloadRouter = require('./routers/hrDownload');
+const fileRouter = require('./routers/file');
 
 connectDB();
 
@@ -19,6 +23,10 @@ app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/api/applications', applicationRouter);
 app.use('/api/users', userRouter);
+app.use('/api/upload', uploadRouter);
+app.use('/api/download', downloadRouter);
+app.use('/api/hrDownload', hrDownloadRouter);
+app.use('/api/files', fileRouter);
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');
