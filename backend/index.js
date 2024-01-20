@@ -7,6 +7,8 @@ const app = express();
 const port = 3000;
 
 const authRouter = require('./routers/auth');
+const userRouter = require('./routers/user');
+const applicationRouter = require('./routers/application')
 
 connectDB();
 
@@ -15,6 +17,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use('/auth', authRouter);
+app.use('/api/applications', applicationRouter);
+app.use('/api/users', userRouter);
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');

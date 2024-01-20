@@ -1,7 +1,7 @@
 const APIError = require('../errors');
 const PersonalInformation = require('../models/personalInformation');
 const User = require('../models/user');
-
+const ObjectId = require('mongoose').Types.ObjectId;
 const getAllApplication = async (req, res, next) => {
     try {
         const applications = await PersonalInformation.find();
@@ -14,11 +14,19 @@ const getAllApplication = async (req, res, next) => {
 
 // find application(personalInformation) by uid
 const getOneApplication = async (req, res, next) => {
-    const uid = req.params?.uid;
+    let uid = req.params?.uid;
 
-    if (!uid) {
-        return next(new APIError("No user id presented!"), 400);
+
+    if (!uid || !ObjectId.isValid(uid)) {
+        return next(new APIError("User id not valid!", 400));
     }
+
+    const user = await User.findById(uid);
+
+    if (!user) {
+        return next(new APIError("No user found for this uid!", 400));
+    }
+
     try {
         const application = await PersonalInformation.findOne({ user: uid });
         return res.status(200).json(application);
@@ -29,16 +37,19 @@ const getOneApplication = async (req, res, next) => {
 };
 
 const createApplication = async (req, res, next) => {
-    const uid = req.params?.uid;
+    let uid = req.params?.uid;
 
-    if (!uid) {
-        return next(new APIError("No user id presented!"), 400);
+
+    if (!uid || !ObjectId.isValid(uid)) {
+        return next(new APIError("User id not valid!", 400));
     }
 
     const user = await User.findById(uid);
+
     if (!user) {
         return next(new APIError("No user found for this uid!", 400));
     }
+
 
     let application = await PersonalInformation.findOne({ user: uid });
 
@@ -53,6 +64,7 @@ const createApplication = async (req, res, next) => {
         user.personalInformation = application._id;
         await user.save();
         console.log("An application is created!");
+
         res.status(201).json({ message: "An application for this user is created!" });
     } catch (err) {
         console.error(err.message);
@@ -61,11 +73,19 @@ const createApplication = async (req, res, next) => {
 };
 
 const updateApplication = async (req, res, next) => {
-    const uid = req.params?.uid;
+    let uid = req.params?.uid;
 
-    if (!uid) {
-        return next(new APIError("No user id presented!"), 400);
+
+    if (!uid || !ObjectId.isValid(uid)) {
+        return next(new APIError("User id not valid!", 400));
     }
+
+    const user = await User.findById(uid);
+
+    if (!user) {
+        return next(new APIError("No user found for this uid!", 400));
+    }
+
     try {
         const application = await PersonalInformation.findOneAndUpdate({ user: uid }, { ...req.body, user: uid }, { new: true });
         res.status(200).json(application);
