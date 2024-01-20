@@ -23,7 +23,7 @@ const authenticate = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error(error);
+    console.error(err);
     return next(new APIError('Token is not valid', 401));
   }
 };

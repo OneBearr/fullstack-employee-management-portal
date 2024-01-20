@@ -10,10 +10,22 @@ const createUser = async (req, res, next) => {
         return res.status(200).json(user);
     } catch (error) {
         console.error(error);
-        return next(new APIError("Server Internal Error", 500));
+        return next(new APIError(error.message, 500));
     }
 }
 
+const getAllUsers = async (req, res, next) => {
+    try {
+        const users = await User.find();
+        return res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        return next(new APIError(error.message, 500));
+    }
+};
+
+
 module.exports = {
-    createUser
+    createUser,
+    getAllUsers
 }

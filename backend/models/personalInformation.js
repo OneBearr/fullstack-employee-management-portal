@@ -31,23 +31,32 @@ const personalInformationSchema = new mongoose.Schema({
     ssn: { type: String, required: true },
     dob: { type: Date, required: true },
     gender: { type: String, required: true },
-    emergencyContacts: [{
-        firstName: String,
-        lastName: String,
-        phone: String,
-        email: String,
-        relationship: String
-    }],
+    emergencyContacts: {
+        type: [{
+            firstName: { type: String, required: true },
+            lastName: { type: String, required: true },
+            middleName: String,
+            phone: String,
+            email: String,
+            relationship: { type: String, required: true }
+        }],
+        validate: {
+            validator: function (v) {
+                return Array.isArray(v) && v.length > 0;
+            },
+            message: 'You must add at least one emergency contact'
+        }
+    },
     reference: {
         firstName: String,
         lastName: String,
         phone: String,
         email: String,
         relationship: String,
-        default: null
+        //default: null
     },
     workAuth: {
-        isCitizen: Boolean,
+        isCitizen: { type: Boolean, required: true },
         citizenType: String,
         workAuthType: String
     },
@@ -55,7 +64,7 @@ const personalInformationSchema = new mongoose.Schema({
         visaTitle: String,
         startDate: Date,
         endDate: Date,
-        default: null
+        //default: null
     },
     onboardingInfo: {
         status: { type: String, default: "pending" /* e.g., 'pending', 'approved', 'rejected' */ },
