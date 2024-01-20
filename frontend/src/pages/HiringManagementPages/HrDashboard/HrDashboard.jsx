@@ -12,6 +12,10 @@ export default function HrDashboard() {
       <NavMenu
         menuItems={[
           {
+            key: "home",
+            label: <Link to="/hr-dashboard">My Home Page</Link>,
+          },
+          {
             key: "profiles",
             label: (
               <Link to="/hr-dashboard/employee-profiles">
@@ -21,25 +25,53 @@ export default function HrDashboard() {
           },
           {
             key: "visaStatusManagement",
-            label: (
-              <Link to="/hr-dashboard/visa-status-management">
-                Employee Visa Status Management
-              </Link>
-            ),
+            label: "Employee Visa Status Management",
+            children: [
+              {
+                key: "visaStatusManagement/all",
+                label: (              
+                  <Link to="/hr-dashboard/visa-status-management" state={{type:'all'}}>
+                    All
+                  </Link>
+                )
+              },
+              {
+                key: "visaStatusManagement/inProgress",
+                label: (              
+                  <Link to="/hr-dashboard/visa-status-management" state={{type:'in-progress'}}>
+                    In Progress
+                  </Link>
+                )
+              },
+            ],
           },
           {
             key: "hiringManagement",
-            label: (
-              <Link to="/hr-dashboard/hiring-management">
-                Hiring Management
-              </Link>
-            ),
+            label: "Hiring Management",
+            children: [
+              {
+                key: "hiringManagement/registration",
+                label: (              
+                  <Link to="/hr-dashboard/hiring-management" state={{type:'registration'}}>
+                    Registration Token
+                  </Link>
+                )
+              },
+              {
+                key: "hiringManagement/review",
+                label: (              
+                  <Link to="/hr-dashboard/hiring-management" state={{type:'review'}}>
+                    Onboarding Application Review
+                  </Link>
+                )
+              },
+            ],
           },
         ]}
       />
       <Routes>
         {/* /hr-dashboard/* */}
-        <Route path="/" element={<></>} />
+        <Route path="/" element={<div id="content" className='flex items-center justify-center text-3xl font-bold'> Welcome to your Hiring Management Home Page</div>} />
         <Route path="/employee-profiles" element={<EmployeeProfiles />} />
         <Route
           path="/visa-status-management"
