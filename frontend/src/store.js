@@ -9,6 +9,7 @@ const preloadedState = {
             username: "",
             userID: "",
             email: "",
+            registerEmail: "",
             exp: null
         },
         loading: false,

@@ -19,6 +19,21 @@ const AuthForm = (props) => {
     const dispatch = useDispatch();
     const { isHR } = useSelector((state) => state.user.info);
 
+    useEffect(() => {
+        if (type === "register" && !isJWT(token)) {
+            navigate("/");
+        }
+    }, [type, token, navigate]);
+
+    function isJWT(token) {
+        if (!token) {
+            return false;
+        }
+        const parts = token.split('.');
+        return parts.length === 3 && 
+               parts.every(part => part.length > 0);
+    }
+
     const onFinish = async (values) => {
         console.log("Received values of form: ", values);
         const { username, password } = values;

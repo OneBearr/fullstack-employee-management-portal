@@ -3,8 +3,8 @@ const APIError = require('../errors')
 
 const createUser = async (req, res, next) => {
     try {
-        const { username, password, email } = req.body;
-        let user = new User({ username, password, email });
+        const { username, password, email, registerEmail } = req.body;
+        let user = new User({ username, password, email, registerEmail });
 
         user = await user.save();
         return res.status(200).json(user);

@@ -71,6 +71,7 @@ const signin = async (req, res, next) => {
             username: user.username,
             userID: user.id,
             email: user.email,
+            registerEmail: user.registerEmail,
             exp: expiration,
         });
     } catch (err) {
@@ -135,7 +136,7 @@ const verifyRegistrationToken = async (req, res, next) => {
         regToken.used = true;
         await regToken.save();
 
-        // req.body.email = decoded.email;
+        req.body.registerEmail = decoded.email;
 
         return next();
     } catch (error) {

@@ -24,6 +24,7 @@ const initialState = {
         username: "",
         userID: "",
         email: "",
+        registerEmail: "",
         exp: null
     },
     loading: false,
@@ -42,6 +43,7 @@ export const userSlice = createSlice({
                 username: "",
                 userID: "",
                 email: "",
+                registerEmail: "",
                 exp: null
             }
             state.loading = false;
@@ -58,6 +60,7 @@ export const userSlice = createSlice({
                     username: "",
                     userID: "",
                     email: "",
+                    registerEmail: "",
                     exp: null
                 }
                 state.loading = true;

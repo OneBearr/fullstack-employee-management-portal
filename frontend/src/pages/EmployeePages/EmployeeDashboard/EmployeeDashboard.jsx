@@ -8,9 +8,11 @@ import VisaStatusMgnt from "../VisaStatusMgnt/VisaStatusMgnt";
 import ErrorPage from "../../ErrorPage/ErrorPage";
 import OnboardApplication from "../OnboardApplication/OnboardApplication";
 import { Link } from "react-router-dom";
+import {menuItemsUnapproved, menuItemsApproved} from './menuItems';
 
 export default function EmployeeDashboard() {
     const navigate = useNavigate();
+    const [isApproved, setIsApproved] = useState(false);
     const { username } = useSelector((state) => state.user.info);
 
     // if no user in the store, redirect to the welcome home page
@@ -23,36 +25,7 @@ export default function EmployeeDashboard() {
     return (
         <div id='content' className='w-1/2'>
             <NavMenu
-                menuItems={[
-                    {
-                        key: "home",
-                        label: <Link to="/employee-dashboard">My Home Page</Link>,
-                    },
-                    {
-                        key: "personalInfo",
-                        label: (
-                        <Link to="/employee-dashboard/personal-info">
-                            Personal Information
-                        </Link>
-                        ),
-                    },
-                    {
-                        key: "visaStatus",
-                        label: (
-                        <Link to="/employee-dashboard/visa-status">
-                            Visa Status Management
-                        </Link>
-                        ),
-                    },
-                    {
-                        key: "onboarding",
-                        label: (
-                        <Link to="/employee-dashboard/onboarding">
-                            Onboarding Application
-                        </Link>
-                        ),
-                    },
-                ]}
+                menuItems={isApproved ? menuItemsApproved : menuItemsUnapproved}
             />
                 <Routes>
                     {/* /employee-dashboard/* */}
