@@ -1,9 +1,11 @@
-import React from 'react'
+import React from 'react';
+import { useSelector } from "react-redux";
 import { Form, Input, Button, DatePicker, Select, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 export default function OnboardApplication() {
+    const { registerEmail } = useSelector((state) => state.user.info);
 
     const onFinish = (values) => {
         console.log('Received values of form: ', values);
@@ -110,7 +112,7 @@ export default function OnboardApplication() {
                         label="Email"
                         rules={[{ required: true, message: 'Please input your email!' }]}
                     >
-                        <Input />
+                        <Input defaultValue={registerEmail} disabled />
                     </Form.Item>
 
                     {/* SSN, Date of Birth and Gender */}
