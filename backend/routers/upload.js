@@ -22,7 +22,7 @@ router.post('/opt', authenticate, upload.single("opt"), async (req, res) => {
     if (req.file) {
         //console.log(req.file);
         let newFile = new File({
-            fileType: 'visa_document',
+            fileType: 'opt_receipt',
             user: req.user.id,
             filePath: req.file.destination,
             fileName: req.file.filename,
