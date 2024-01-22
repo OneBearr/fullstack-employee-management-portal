@@ -4,9 +4,9 @@ import { useLocation } from "react-router-dom";
 import { Menu } from 'antd';
 
 export default function NavMenu(props) {
+    const { menuItems } = props;
     const location = useLocation();
     const [current, setCurrent] = useState(null);
-    const { menuItems } = props;
 
     useEffect(() => {
         const path = location.pathname;

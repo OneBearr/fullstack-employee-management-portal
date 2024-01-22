@@ -86,8 +86,20 @@ const updateApplication = async (req, res, next) => {
         return next(new APIError("No user found for this uid!", 400));
     }
 
+    let newStatus = "";
+    if (req.body.onboardingInfo.status === "rejected") {
+        newStatus = "pending";
+    } else if (req.body.onboardingInfo.status === "approved") {
+        newStatus = "approved";
+    }
+
     try {
-        const application = await PersonalInformation.findOneAndUpdate({ user: uid }, { ...req.body, user: uid }, { new: true });
+        const application = await PersonalInformation.findOneAndUpdate({ user: uid }, {
+            ...req.body, user: uid, onboardingInfo: {
+                status: newStatus,
+                feedback: ""
+            }
+        }, { new: true });
         res.status(200).json(application);
     } catch (err) {
         console.error(err.message);

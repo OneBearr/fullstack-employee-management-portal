@@ -8,6 +8,10 @@ const personalInformationSchema = new mongoose.Schema({
     preferredName: { type: String },
     profilePicture: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
     address: {
+        unitNumber: {
+            type: String,
+            required: true,
+        },
         streetName: {
             type: String,
             required: true,

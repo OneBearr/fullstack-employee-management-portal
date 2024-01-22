@@ -1,47 +1,131 @@
-import React from 'react';
-import { useSelector } from "react-redux";
-import { Form, Input, Button, DatePicker, Select, Upload } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Form, Input, Button, DatePicker, Select, Upload, Space, message } from 'antd';
+import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import moment from 'moment';
+import { submitPersonalInfo, updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
 const { Option } = Select;
 
 export default function OnboardApplication() {
-    const { registerEmail } = useSelector((state) => state.user.info);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { registerEmail, userID } = useSelector((state) => state.user.info);
+    const { status, feedback } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
+    const { info, loading } = useSelector((state) => state.personalInfo ?? {});
+    const isFormDisabled = status === 'pending';
 
-    const onFinish = (values) => {
-        console.log('Received values of form: ', values);
+    useEffect(() => {
+        if (status === 'approved') {
+            navigate("/employee-dashboard/personal-info", { replace: true });
+        }
+    }, [status, navigate]);
+
+    const onFinish = async (values) => {
+        if (values.emergencyContacts.length < 1) {
+            alert('At least one emergency contact!');
+            return;
+        }
+        const personalInfoData = {
+            ...values,
+            dob: values.dob.format('YYYY-MM-DD'),
+            employmentDetails: {
+                ...values.employmentDetails,
+                startDate: values.employmentDetails.startDate.format('YYYY-MM-DD'),
+                endDate: values.employmentDetails.endDate.format('YYYY-MM-DD')
+            }
+        };
+        if (status === "rejected") {
+            personalInfoData.onboardingInfo = info.onboardingInfo;
+            try {
+                await dispatch(updatePersonalInfo({ personalInfoData, userID }));
+                message.success('Onboarding application submitted successfully!');
+            } catch (error) {
+                message.error(`Submission failed: ${error.message}`);
+            }
+        } else {
+            try {
+                await dispatch(submitPersonalInfo({ personalInfoData, userID }));
+                message.success('Onboarding application submitted successfully!');
+            } catch (error) {
+                message.error(`Submission failed: ${error.message}`);
+            }
+        }
+        console.log(personalInfoData);
+        navigate(0);
     };
 
+    const initialValues = useMemo(() => {
+        if (status === 'pending' || status === 'rejected') {
+            return {
+                email: registerEmail,
+                firstName: info.firstName,
+                lastName: info.lastName,
+                middleName: info.middleName,
+                preferredName: info.preferredName,
+                address: info.address,
+                cellPhoneNumber: info.cellPhoneNumber,
+                workPhoneNumber: info.workPhoneNumber,
+                ssn: info.ssn,
+                dob: moment.utc(info.dob),
+                gender: info.gender,
+                emergencyContacts: info.emergencyContacts,
+                reference: info.reference,
+                workAuth: {
+                    isCitizen: info.workAuth.isCitizen ? "yes" : "no",
+                    workAuthType: info.workAuth.workAuthType
+                },
+                employmentDetails: {
+                    visaTitle: info.employmentDetails.visaTitle,
+                    startDate: moment.utc(info.employmentDetails.startDate),
+                    endDate: moment.utc(info.employmentDetails.endDate)
+                }
+            };
+        } else {
+            return {
+                email: registerEmail,
+                emergencyContacts: [{}]
+            };
+        }
+    }, [registerEmail, status, info]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
     return (
         <div id="content" className='w-full flex-col p-5'>
             <div className='flex justify-center text-3xl font-bold mb-5'>Onboarding Application Page</div>
-            <div className='flex justify-center text-xl font-bold mb-5'>Current Status: Not submitted yet</div>
+            <div className='flex justify-center text-xl font-bold mb-5'>Current Status: {status ? status : "Never submitted"}</div>
+            {status === "rejected" && <div className='flex justify-center text-xl font-bold mb-5'>Reason: {feedback}</div>}
+            {status === "pending" && <div className='flex justify-center text-xl font-bold mb-5'>Please wait for HR to review your application</div>}
             <div className='w-full flex justify-center'>
                 <Form
                     name="onboardingForm"
                     className="w-1/3 "
                     onFinish={onFinish}
                     layout="vertical"
+                    initialValues={initialValues}
                 >
-                    {/* Name */}
+                    {/* Basic Info */}
                     <Form.Item
                         name="firstName"
                         label="First Name"
                         rules={[{ required: true, message: 'Please input your first name!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name="lastName"
                         label="Last Name"
                         rules={[{ required: true, message: 'Please input your last name!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item name="middleName" label="Middle Name">
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item name="preferredName" label="Preferred Name">
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
 
                     {/* Profile Picture */}
@@ -55,55 +139,55 @@ export default function OnboardApplication() {
                     <div>Current Address:</div><br />
                     {/* Address */}
                     <Form.Item
-                        name="buildingAptNumber"
+                        name={['address', 'unitNumber']}
                         label="Building/Apt #"
                         rules={[{ required: true, message: 'Please input your building or apartment number!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
 
                     <Form.Item
-                        name="streetName"
+                        name={['address', 'streetName']}
                         label="Street Name"
                         rules={[{ required: true, message: 'Please input your street name!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
 
                     <Form.Item
-                        name="city"
+                        name={['address', 'city']}
                         label="City"
                         rules={[{ required: true, message: 'Please input your city!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
 
                     <Form.Item
-                        name="state"
+                        name={['address', 'state']}
                         label="State"
                         rules={[{ required: true, message: 'Please select your state!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
 
                     <Form.Item
-                        name="zip"
+                        name={['address', 'zip']}
                         label="Zip"
                         rules={[{ required: true, message: 'Please input your zip code!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
 
-                    {/* Phone Number */}
+                    {/* Phone Numbers */}
                     <Form.Item
-                        name="cellPhone"
+                        name="cellPhoneNumber"
                         label="Cell Phone Number"
                         rules={[{ required: true, message: 'Please input your cell phone number!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
-                    <Form.Item name="workPhone" label="Work Phone Number">
-                        <Input />
+                    <Form.Item name="workPhoneNumber" label="Work Phone Number">
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
 
                     {/* Email */}
@@ -112,7 +196,7 @@ export default function OnboardApplication() {
                         label="Email"
                         rules={[{ required: true, message: 'Please input your email!' }]}
                     >
-                        <Input defaultValue={registerEmail} disabled />
+                        <Input disabled />
                     </Form.Item>
 
                     {/* SSN, Date of Birth and Gender */}
@@ -121,48 +205,48 @@ export default function OnboardApplication() {
                         label="Social Security Number"
                         rules={[{ required: true, message: 'Please input your SSN!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name="dob"
                         label="Date of Birth"
                         rules={[{ required: true, message: 'Please input your date of birth!' }]}
                     >
-                        <DatePicker />
+                        <DatePicker disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name="gender"
                         label="Gender"
                         rules={[{ required: true, message: 'Please select your gender!' }]}
                     >
-                        <Select placeholder="Select your gender">
-                            <Option value="male">Male</Option>
-                            <Option value="female">Female</Option>
+                        <Select placeholder="Select your gender" disabled={isFormDisabled}>
+                            <Option value="Male">Male</Option>
+                            <Option value="Female">Female</Option>
                             <Option value="notSpecified">I do not wish to answer</Option>
                         </Select>
                     </Form.Item>
 
                     {/* Permanent resident or citizen */}
-                    <Form.Item name="usResidentOrCitizen" label="Permanent resident or citizen of the U.S.?" rules={[{ required: true }]}>
-                        <Select>
+                    <Form.Item name={['workAuth', 'isCitizen']} label="Permanent resident or citizen of the U.S.?" rules={[{ required: true }]}>
+                        <Select disabled={isFormDisabled}>
                             <Option value="yes">Yes</Option>
                             <Option value="no">No</Option>
                         </Select>
                     </Form.Item>
 
                     <Form.Item
-                        shouldUpdate={(prevValues, currentValues) => prevValues.usResidentOrCitizen !== currentValues.usResidentOrCitizen}
+                        shouldUpdate={(prevValues, currentValues) => prevValues.workAuth?.isCitizen !== currentValues.workAuth?.isCitizen}
                         noStyle
                     >
                         {({ getFieldValue }) => {
-                            if (getFieldValue('usResidentOrCitizen') === 'yes') {
+                            if (getFieldValue(['workAuth', 'isCitizen']) === 'yes') {
                                 return (
                                     <Form.Item
-                                        name="residentStatus"
+                                        name={['workAuth', 'citizenType']}
                                         label="Please select your status"
                                         rules={[{ required: true }]}
                                     >
-                                        <Select>
+                                        <Select disabled={isFormDisabled}>
                                             <Option value="greenCard">Green Card</Option>
                                             <Option value="citizen">Citizen</Option>
                                         </Select>
@@ -170,14 +254,14 @@ export default function OnboardApplication() {
                                 );
                             }
                             // work authorization
-                            if (getFieldValue('usResidentOrCitizen') === 'no') {
+                            if (getFieldValue(['workAuth', 'isCitizen']) === 'no') {
                                 return (
                                     <Form.Item
-                                        name="workAuthorization"
+                                        name={['workAuth', 'workAuthType']}
                                         label="What is your work authorization?"
                                         rules={[{ required: true }]}
                                     >
-                                        <Select>
+                                        <Select disabled={isFormDisabled}>
                                             <Option value="H1B">H1-B</Option>
                                             <Option value="L2">L2</Option>
                                             <Option value="F1CPTOPT">F1 (CPT/OPT)</Option>
@@ -193,12 +277,12 @@ export default function OnboardApplication() {
                     </Form.Item>
 
                     <Form.Item
-                        shouldUpdate={(prevValues, currentValues) => prevValues.workAuthorization !== currentValues.workAuthorization
-                            || prevValues.usResidentOrCitizen !== currentValues.usResidentOrCitizen}
+                        shouldUpdate={(prevValues, currentValues) => prevValues.workAuth?.workAuthType !== currentValues.workAuth?.workAuthType
+                            || prevValues.workAuth?.isCitizen !== currentValues.workAuth?.isCitizen}
                         noStyle
                     >
                         {({ getFieldValue }) => {
-                            if (getFieldValue('usResidentOrCitizen') === 'no' && getFieldValue('workAuthorization') === 'F1CPTOPT') {
+                            if (getFieldValue(['workAuth', 'isCitizen']) === 'no' && getFieldValue(['workAuth', 'workAuthType']) === 'F1CPTOPT') {
                                 return (
                                     <Form.Item
                                         name="optReceipt"
@@ -213,15 +297,14 @@ export default function OnboardApplication() {
                                     </Form.Item>
                                 );
                             }
-
-                            if (getFieldValue('usResidentOrCitizen') === 'no' && getFieldValue('workAuthorization') === 'other') {
+                            if (getFieldValue(['workAuth', 'isCitizen']) === 'no' && getFieldValue(['workAuth', 'workAuthType']) === 'other') {
                                 return (
                                     <Form.Item
-                                        name="otherVisaTitle"
+                                        name={['employmentDetails', 'visaTitle']}
                                         label="Specify your Visa Title"
                                         rules={[{ required: true, message: 'Please specify your visa title!' }]}
                                     >
-                                        <Input />
+                                        <Input disabled={isFormDisabled} />
                                     </Form.Item>
                                 );
                             }
@@ -230,20 +313,19 @@ export default function OnboardApplication() {
                     </Form.Item>
 
                     <Form.Item
-                        shouldUpdate={(prevValues, currentValues) => prevValues.usResidentOrCitizen !== currentValues.usResidentOrCitizen}
+                        shouldUpdate={(prevValues, currentValues) => prevValues.workAuth?.isCitizen !== currentValues.workAuth?.isCitizen}
                         noStyle
                     >
                         {({ getFieldValue }) => {
-                            if (getFieldValue('usResidentOrCitizen') === 'no') {
+                            if (getFieldValue(['workAuth', 'isCitizen']) === 'no') {
                                 return (
                                     <Form.Item
-                                        name="startDate"
+                                        name={['employmentDetails', 'startDate']}
                                         label="Start Date"
                                         rules={[{ required: true, message: 'Please select your start date!' }]}
                                     >
-                                        <DatePicker />
+                                        <DatePicker disabled={isFormDisabled} />
                                     </Form.Item>
-
                                 );
                             }
                             return null;
@@ -251,18 +333,18 @@ export default function OnboardApplication() {
                     </Form.Item>
 
                     <Form.Item
-                        shouldUpdate={(prevValues, currentValues) => prevValues.usResidentOrCitizen !== currentValues.usResidentOrCitizen}
+                        shouldUpdate={(prevValues, currentValues) => prevValues.workAuth?.isCitizen !== currentValues.workAuth?.isCitizen}
                         noStyle
                     >
                         {({ getFieldValue }) => {
-                            if (getFieldValue('usResidentOrCitizen') === 'no') {
+                            if (getFieldValue(['workAuth', 'isCitizen']) === 'no') {
                                 return (
                                     <Form.Item
-                                        name="endDate"
+                                        name={['employmentDetails', 'endDate']}
                                         label="End Date"
                                         rules={[{ required: true, message: 'Please select your end date!' }]}
                                     >
-                                        <DatePicker />
+                                        <DatePicker disabled={isFormDisabled} />
                                     </Form.Item>
                                 );
                             }
@@ -271,47 +353,126 @@ export default function OnboardApplication() {
                     </Form.Item>
 
                     {/* Referrer */}
+                    <div className='text-xl font-bold'>Reference:</div>
                     <Form.Item
-                        name="referralFirstName"
-                        label="Referral First Name"
-                        rules={[{ required: true, message: 'Please input referral first name!' }]}
+                        name={['reference', 'firstName']}
+                        label="First Name"
+                        rules={[{ required: true, message: 'Please input the first name!' }]}
                     >
-                        <Input />
+                        <Input disabled={isFormDisabled} />
                     </Form.Item>
+                    <Form.Item
+                        name={['reference', 'lastName']}
+                        label="Last Name"
+                        rules={[{ required: true, message: 'Please input the last name!' }]}
+                    >
+                        <Input disabled={isFormDisabled} />
+                    </Form.Item>
+                    <Form.Item
+                        name={['reference', 'phone']}
+                        label="Phone"
+                        rules={[{ required: true, message: 'Please input the phone number!' }]}
+                    >
+                        <Input disabled={isFormDisabled} />
+                    </Form.Item>
+                    <Form.Item
+                        name={['reference', 'email']}
+                        label="Email"
+                        rules={[{ required: true, message: 'Please input the email address!' }]}
+                    >
+                        <Input disabled={isFormDisabled} />
+                    </Form.Item>
+                    <Form.Item
+                        name={['reference', 'relationship']}
+                        label="Relationship"
+                        rules={[{ required: true, message: 'Please input the relationship!' }]}
+                    >
+                        <Input disabled={isFormDisabled} />
+                    </Form.Item>
+                    {/* Emergency Contacts */}
+                    <label className='text-xl font-bold'>Emergency Contacts</label><br /><br />
+                    <Form.List
+                        name="emergencyContacts"
+                    >
+                        {(fields, { add, remove }) => (
+                            <>
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <Space key={key} direction="vertical" style={{ marginBottom: 10 }} >
+                                        <label className='text-lg'>Emergency Contact</label>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'firstName']}
+                                            label="First Name"
+                                            rules={[{ required: true, message: 'First name is required' }]}
+                                            className='mb-2'
+                                        >
+                                            <Input disabled={isFormDisabled} />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'lastName']}
+                                            label="Last Name"
+                                            rules={[{ required: true, message: 'Last name is required' }]}
+                                            className='mb-2'
+                                        >
+                                            <Input disabled={isFormDisabled} />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            label="Middle Name"
+                                            name={[name, 'middleName']}
+                                            className='mb-2'
+                                        >
+                                            <Input disabled={isFormDisabled} />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'phone']}
+                                            label="Phone"
+                                            rules={[{ required: true, message: 'Phone is required' }]}
+                                            className='mb-2'
+                                        >
+                                            <Input disabled={isFormDisabled} />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'email']}
+                                            label="Email"
+                                            rules={[{ required: true, message: 'Email is required' }]}
+                                            className='mb-2'
+                                        >
+                                            <Input disabled={isFormDisabled} />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, 'relationship']}
+                                            label="Relationship"
+                                            rules={[{ required: true, message: 'Relationship is required' }]}
+                                            className='mb-0'
+                                        >
+                                            <Input disabled={isFormDisabled} />
+                                        </Form.Item>
+                                        {fields.length > 1 && !isFormDisabled && <MinusCircleOutlined onClick={() => remove(name)} />}
+                                    </Space>
+                                ))}
+                                {!isFormDisabled &&
+                                    <Form.Item>
+                                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                            Add Emergency Contact
+                                        </Button>
+                                    </Form.Item>
+                                }
 
-                    <Form.Item
-                        name="referralLastName"
-                        label="Referral Last Name"
-                        rules={[{ required: true, message: 'Please input referral last name!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="referralMiddleName" label="Referral Middle Name">
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="referralPhone" label="Referral Phone">
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="referralEmail"
-                        label="Referral Email"
-                        rules={[{ type: 'email', message: 'Please input a valid email!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="referralRelationship"
-                        label="Relationship with Referral"
-                        rules={[{ required: true, message: 'Please input your relationship with the referral!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Submit
-                        </Button>
-                    </Form.Item>
+                            </>
+                        )}
+                    </Form.List>
+                    {!isFormDisabled &&
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                Submit
+                            </Button>
+                        </Form.Item>
+                    }
                 </Form>
             </div>
         </div>
