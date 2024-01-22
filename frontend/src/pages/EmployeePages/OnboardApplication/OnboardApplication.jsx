@@ -1,19 +1,21 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Form, Input, Button, DatePicker, Select, Upload, Space, message } from 'antd';
+import { Form, Input, Button, DatePicker, Select, Upload, Space, Avatar, message } from 'antd';
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { submitPersonalInfo, updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
+import { submitOptReceiptAPI } from '../../../services/document';
 const { Option } = Select;
 
 export default function OnboardApplication() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { registerEmail, userID } = useSelector((state) => state.user.info);
+    const { registerEmail, userID, token } = useSelector((state) => state.user.info);
     const { status, feedback } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
     const { info, loading } = useSelector((state) => state.personalInfo ?? {});
     const isFormDisabled = status === 'pending';
+    const defaultAvatarUrl = 'https://www.pngitem.com/pimgs/m/137-1370051_avatar-generic-avatar-hd-png-download.png';
 
     useEffect(() => {
         if (status === 'approved') {
@@ -33,7 +35,8 @@ export default function OnboardApplication() {
                 ...values.employmentDetails,
                 startDate: values.employmentDetails.startDate.format('YYYY-MM-DD'),
                 endDate: values.employmentDetails.endDate.format('YYYY-MM-DD')
-            }
+            },
+            profilePictureURL: defaultAvatarUrl
         };
         if (status === "rejected") {
             personalInfoData.onboardingInfo = info.onboardingInfo;
@@ -46,6 +49,7 @@ export default function OnboardApplication() {
         } else {
             try {
                 await dispatch(submitPersonalInfo({ personalInfoData, userID }));
+                await submitOptReceiptAPI( values.optReceipt[0].originFileObj, token );
                 message.success('Onboarding application submitted successfully!');
             } catch (error) {
                 message.error(`Submission failed: ${error.message}`);
@@ -101,12 +105,13 @@ export default function OnboardApplication() {
             <div className='w-full flex justify-center'>
                 <Form
                     name="onboardingForm"
-                    className="w-1/3 "
+                    className="w-1/2 "
                     onFinish={onFinish}
                     layout="vertical"
                     initialValues={initialValues}
                 >
                     {/* Basic Info */}
+                    <div className='text-xl font-bold'>Basic Info:</div><br />
                     <Form.Item
                         name="firstName"
                         label="First Name"
@@ -129,14 +134,11 @@ export default function OnboardApplication() {
                     </Form.Item>
 
                     {/* Profile Picture */}
-                    <Form.Item name="profilePicture" label="Profile Picture">
-                        <Upload name="profilePicture" listType="picture">
-                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                        </Upload>
-
+                    <Form.Item name="profilePicture" label="Default Profile Picture:">
+                        <Avatar size={64} src={defaultAvatarUrl} />
                     </Form.Item>
 
-                    <div>Current Address:</div><br />
+                    <div className='text-xl font-bold'>Address:</div><br />
                     {/* Address */}
                     <Form.Item
                         name={['address', 'unitNumber']}
@@ -179,6 +181,7 @@ export default function OnboardApplication() {
                     </Form.Item>
 
                     {/* Phone Numbers */}
+                    <div className='text-xl font-bold'>Contact Info:</div><br />
                     <Form.Item
                         name="cellPhoneNumber"
                         label="Cell Phone Number"
@@ -193,13 +196,14 @@ export default function OnboardApplication() {
                     {/* Email */}
                     <Form.Item
                         name="email"
-                        label="Email"
+                        label="Default Email"
                         rules={[{ required: true, message: 'Please input your email!' }]}
                     >
                         <Input disabled />
                     </Form.Item>
 
                     {/* SSN, Date of Birth and Gender */}
+                    <div className='text-xl font-bold'>Identity Info:</div><br />
                     <Form.Item
                         name="ssn"
                         label="Social Security Number"
@@ -287,11 +291,15 @@ export default function OnboardApplication() {
                                     <Form.Item
                                         name="optReceipt"
                                         label="Upload your OPT Receipt"
-                                        // valuePropName="fileList"
-                                        // getValueFromEvent={normFile}
-                                        rules={[{ required: true, message: 'Please upload you OPT receipt!' }]}
+                                        valuePropName="fileList"
+                                        getValueFromEvent={(e) => {
+                                            if (Array.isArray(e)) {
+                                                return e;
+                                            }
+                                            return e && e.fileList;
+                                        }}
                                     >
-                                        <Upload name="optReceipt" listType="text"  >
+                                        <Upload beforeUpload={() => false} listType="text ">
                                             <Button icon={<UploadOutlined />}>Click to upload</Button>
                                         </Upload>
                                     </Form.Item>

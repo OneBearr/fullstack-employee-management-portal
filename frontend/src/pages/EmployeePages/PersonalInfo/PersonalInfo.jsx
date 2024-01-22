@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Form, Input, Button, Modal, DatePicker, Upload, Select, Space, message } from "antd";
+import { Form, Input, Button, Modal, DatePicker, Upload, Select, Space, Avatar, message } from "antd";
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
@@ -126,6 +126,7 @@ export default function PersonalInfo() {
           form={form}
         >
           {/* Basic Info */}
+          <div className='text-xl font-bold'>Basic Info:</div><br />
           <Form.Item
             name="firstName"
             label="First Name: "
@@ -164,15 +165,12 @@ export default function PersonalInfo() {
           </Form.Item>
 
           {/* Profile Picture */}
-          <Form.Item name="profilePicture" label="Profile Picture: ">
-            <Upload name="profilePicture" listType="picture">
-              <Button icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>
-
+          <Form.Item name="profilePicture" label="Default Profile Picture:">
+            <Avatar size={64} src={info.profilePictureURL} />
           </Form.Item>
 
-          <div>Current Address:</div><br />
           {/* Address */}
+          <div className='text-xl font-bold'>Address:</div><br />
           <Form.Item
             name={['address', 'unitNumber']}
             label="Building/Apt#: "
@@ -230,6 +228,7 @@ export default function PersonalInfo() {
           </Form.Item>
 
           {/* Phone Numbers */}
+          <div className='text-xl font-bold'>Contact Info:</div><br />
           <Form.Item
             name="cellPhoneNumber"
             label="Cell Phone Number: "
@@ -263,6 +262,7 @@ export default function PersonalInfo() {
           </Form.Item>
 
           {/* SSN, Date of Birth and Gender */}
+          <div className='text-xl font-bold'>Identity Info:</div><br />
           <Form.Item
             name="ssn"
             label="Social Security Number: "
@@ -516,7 +516,7 @@ export default function PersonalInfo() {
           </Form.Item>
 
           {/* Emergency Contacts */}
-          <label className='text-xl font-bold'>Emergency Contacts</label><br /><br />
+          <label className='text-xl font-bold'>Emergency Contacts:</label><br /><br />
           <Form.List
             name="emergencyContacts"
             layout="vertical"

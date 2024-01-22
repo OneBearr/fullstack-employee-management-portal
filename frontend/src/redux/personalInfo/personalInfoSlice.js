@@ -31,6 +31,7 @@ const initialState = {
         lastName: "",
         middleName: "",
         preferredName: "",
+        profilePictureURL: "",
         address: {
             unitNumber: "",
             streetName: "",
