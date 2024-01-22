@@ -6,7 +6,7 @@ const personalInformationSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     middleName: { type: String },
     preferredName: { type: String },
-    profilePicture: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
+    profilePictureURL: { type: String },
     address: {
         unitNumber: {
             type: String,
