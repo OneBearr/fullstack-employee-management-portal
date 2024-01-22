@@ -49,7 +49,7 @@ export default function OnboardApplication() {
         } else {
             try {
                 await dispatch(submitPersonalInfo({ personalInfoData, userID }));
-                await submitOptReceiptAPI( values.optReceipt[0].originFileObj, token );
+                await submitOptReceiptAPI(values.optReceipt[0].originFileObj, token);
                 message.success('Onboarding application submitted successfully!');
             } catch (error) {
                 message.error(`Submission failed: ${error.message}`);
@@ -290,7 +290,7 @@ export default function OnboardApplication() {
                                 return (
                                     <Form.Item
                                         name="optReceipt"
-                                        label="Upload your OPT Receipt"
+                                        label="Your OPT Receipt:"
                                         valuePropName="fileList"
                                         getValueFromEvent={(e) => {
                                             if (Array.isArray(e)) {
@@ -298,10 +298,13 @@ export default function OnboardApplication() {
                                             }
                                             return e && e.fileList;
                                         }}
+                                        rules={[{ required: true, message: 'Please upload you OPT receipt!' }]}
                                     >
-                                        <Upload beforeUpload={() => false} listType="text ">
-                                            <Button icon={<UploadOutlined />}>Click to upload</Button>
-                                        </Upload>
+                                        {isFormDisabled ? "Wait to be reviewed by HR" :
+                                            <Upload beforeUpload={() => false} listType="text " maxCount={1}>
+                                                <Button icon={<UploadOutlined />}>Click to upload</Button>
+                                            </Upload>
+                                        }
                                     </Form.Item>
                                 );
                             }
