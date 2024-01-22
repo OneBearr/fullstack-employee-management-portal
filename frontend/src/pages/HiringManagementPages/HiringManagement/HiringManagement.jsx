@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ErrorPage from "../../ErrorPage/ErrorPage";
 import { Tabs, List, Input, Button, Table } from "antd";
 
@@ -49,7 +49,7 @@ function ReviewApplications(props) {
     {
       name: "Haoru Jiang",
       email: "haorujiang1997@gmail.com",
-      appliction_id: "",
+      appliction_id: "123",
     },
   ];
   const rejectedApplications = [
@@ -78,7 +78,7 @@ function ReviewApplications(props) {
           dataSource={pendingApplications}
           renderItem={(item) => (
             <List.Item
-              actions={[<a key="list-view-application">View Application</a>]}
+              actions={[<Link key="list-view-application" to={`/hr-dashboard/employ-profile/${item.appliction_id}`} target="_blank">View Application</Link>]}
             >
               <p>{item.name}</p>
               <p>{item.email}</p>
