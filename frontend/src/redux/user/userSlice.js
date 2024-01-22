@@ -36,7 +36,6 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         logoutUser: (state) => {
-            //console.log("Logout user");
             state.info = {
                 token: null,
                 isHR: false,
@@ -73,7 +72,6 @@ export const userSlice = createSlice({
                 saveToLocalStorage(state);
             })
             .addCase(fetchUserInfo.rejected, (state, action) => {
-                //console.log(`action: ${action.error.message}`);                
                 state.error = action.error.message || 'Failed to fetch user token';
                 state.loading = false;
             });

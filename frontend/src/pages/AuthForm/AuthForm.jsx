@@ -35,7 +35,6 @@ const AuthForm = (props) => {
     }
 
     const onFinish = async (values) => {
-        console.log("Received values of form: ", values);
         const { username, password } = values;
 
         if (type === 'login') {
