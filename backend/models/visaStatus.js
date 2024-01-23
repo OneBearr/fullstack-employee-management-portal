@@ -32,7 +32,10 @@ const visaStatusSchema = new mongoose.Schema({
         },
         file: { type: mongoose.Schema.Types.ObjectId, ref: 'File' }
     },
-    feedback: String
+    feedback: {
+        type: String,
+        default: ""
+    }
 });
 
 const VisaStatus = mongoose.model("VisaStatus", visaStatusSchema);
