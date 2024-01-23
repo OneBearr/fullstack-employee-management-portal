@@ -5,6 +5,7 @@ const {
     createApplication,
     updateApplication
 } = require('../controllers/application');
+const { authenticate, isOwner } = require('../middlewares/auth')
 
 const router = express.Router();
 
@@ -12,9 +13,9 @@ const router = express.Router();
 router.get('/', getAllApplication);
 
 // api/applications/:uid
-router.get('/:uid', getOneApplication);
-router.post('/:uid', createApplication);
-router.put('/:uid', updateApplication);
+router.get('/:uid', authenticate, isOwner, getOneApplication);
+router.post('/:uid', authenticate, isOwner, createApplication);
+router.put('/:uid', authenticate, isOwner, updateApplication);
 
 
 module.exports = router;

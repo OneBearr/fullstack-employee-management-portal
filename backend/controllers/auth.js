@@ -24,6 +24,7 @@ async function storeToken(email, token) {
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + 1); // Set expiration to 1 hour
 
+    await RegistrationToken.deleteMany({ email, used: false });
     const registrationToken = new RegistrationToken({
         token,
         email,
@@ -83,7 +84,7 @@ const signin = async (req, res, next) => {
 const requestRegister = async (req, res, next) => {
     try {
         const { email } = req.body;
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ registerEmail: email });
 
         if (user) {
             return next(new APIError("Email exists in database!", 400));
