@@ -24,7 +24,7 @@ router.post('/opt', authenticate, upload.single("opt"), async (req, res) => {
         let newFile = new File({
             fileType: 'opt_receipt',
             user: req.user.id,
-            filePath: req.file.destination,
+            filePath: "../upload",
             fileName: req.file.filename,
             access: `http://localhost:3000/api/download/${req.file.filename}`,
             hrAccess: `http://localhost:3000/api/hrDownload/${req.file.filename}`
