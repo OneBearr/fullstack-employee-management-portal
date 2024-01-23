@@ -58,7 +58,7 @@ const createApplication = async (req, res, next) => {
     }
 
     try {
-        application = new PersonalInformation({ ...req.body, user: uid });
+        application = new PersonalInformation({ ...req.body, user: uid, onboardingInfo: { status: 'pending', feedback: "" } });
         application = await application.save();
 
         user.personalInformation = application._id;
@@ -86,15 +86,19 @@ const updateApplication = async (req, res, next) => {
         return next(new APIError("No user found for this uid!", 400));
     }
 
-    let newStatus = "";
-    if (req.body.onboardingInfo.status === "rejected") {
-        newStatus = "pending";
-    } else if (req.body.onboardingInfo.status === "approved") {
-        newStatus = "approved";
-    }
-
     try {
-        const application = await PersonalInformation.findOneAndUpdate({ user: uid }, {
+        let application = await PersonalInformation.findOne({ user: uid });
+
+        if (!application) {
+            return next(new APIError("No application found for this UID!", 400));
+        }
+        let newStatus = "pending";
+        if (application.onboardingInfo.status === "rejected") {
+            newStatus = "pending";
+        } else if (application.onboardingInfo.status === "approved") {
+            newStatus = "approved";
+        }
+        application = await PersonalInformation.findOneAndUpdate({ user: uid }, {
             ...req.body, user: uid, onboardingInfo: {
                 status: newStatus,
                 feedback: ""
