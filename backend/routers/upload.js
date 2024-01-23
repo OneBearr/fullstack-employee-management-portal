@@ -39,24 +39,39 @@ router.post('/opt', authenticate, upload.single("opt"), async (req, res, next) =
                 access: `http://localhost:3000/api/download/${req.file.filename}`,
                 hrAccess: `http://localhost:3000/api/hrDownload/${req.file.filename}`
             });
-            newFile = await newFile.save();
 
-            switch (optDocType) {
-                case 'optReceipt':
-                    visaStatus.optReceipt = { status: "pending", file: newFile.id };
-                    break;
-                case 'optEAD':
-                    visaStatus.optEAD = { status: "pending", file: newFile.id };
-                    break;
-                case 'I983':
-                    visaStatus.I983 = { status: "pending", file: newFile.id };
-                    break;
-                case 'I20':
-                    visaStatus.I20 = { status: "pending", file: newFile.id };
-                    break;
-                default:
+            if (optDocType) {
+                newFile = await newFile.save();
+
+                switch (optDocType) {
+                    case 'optReceipt':
+                        if (visaStatus.optReceipt.file) {
+                            await File.findByIdAndDelete(visaStatus.optReceipt.file);
+                        }
+                        visaStatus.optReceipt = { status: "pending", file: newFile.id };
+                        break;
+                    case 'optEAD':
+                        if (visaStatus.optEAD.file) {
+                            await File.findByIdAndDelete(visaStatus.optEAD.file);
+                        }
+                        visaStatus.optEAD = { status: "pending", file: newFile.id };
+                        break;
+                    case 'I983':
+                        if (visaStatus.I983.file) {
+                            await File.findByIdAndDelete(visaStatus.I983.file);
+                        }
+                        visaStatus.I983 = { status: "pending", file: newFile.id };
+                        break;
+                    case 'I20':
+                        if (visaStatus.I20.file) {
+                            await File.findByIdAndDelete(visaStatus.I20.file);
+                        }
+                        visaStatus.I20 = { status: "pending", file: newFile.id };
+                        break;
+                    default:
+                }
+                visaStatus = await visaStatus.save();
             }
-            visaStatus = await visaStatus.save();
             return res.status(201).json({ message: "upload sucess!" });
         }
         return next(new APIError("upload failed!", 400));
