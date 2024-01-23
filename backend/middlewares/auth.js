@@ -48,7 +48,14 @@ const isHR = async (req, res, next) => {
   }
 };
 
+const isOwner = async (req, res, next) => {
+  if (req.params?.uid != req.user.id) {
+    return next(new APIError("You are not the owner of this file!", 401));
+  }
+  return next();
+}
 module.exports = {
   authenticate,
+  isOwner,
   isHR
 }
