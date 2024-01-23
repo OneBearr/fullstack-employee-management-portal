@@ -15,7 +15,7 @@ router.get('/:fileName', authenticate, isHR, async (req, res, next) => {
         return next(new APIError("No such file!", 404));
     }
 
-    const filePath = path.join(fileDoc.filePath, fileDoc.fileName);
+    const filePath = path.join(__dirname, fileDoc.filePath, fileDoc.fileName);
 
     // Check if file exists
     if (fs.existsSync(filePath)) {
