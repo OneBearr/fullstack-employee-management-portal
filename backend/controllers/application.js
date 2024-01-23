@@ -58,7 +58,7 @@ const createApplication = async (req, res, next) => {
     }
 
     try {
-        application = new PersonalInformation({ ...req.body, user: uid, onboardingInfo: { status: 'pending', feedback: "" } });
+        application = new PersonalInformation({ ...req.body, email: user.registerEmail, user: uid, onboardingInfo: { status: 'pending', feedback: "" } });
         application = await application.save();
 
         user.personalInformation = application._id;
