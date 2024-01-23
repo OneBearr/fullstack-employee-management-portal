@@ -5,6 +5,7 @@ import HiringManagement from "../HiringManagement/HiringManagement";
 import HrVisaStatusManagement from "../HrVisaStatusManagement/HrVisaStatusManagement";
 import EmployeeProfiles from "../EmployeeProfiles/EmployeeProfiles";
 import Profile from "../Profile/Profile";
+import DocumentReview from "../DocumentReview/DocumentReview";
 import { Link } from "react-router-dom";
 
 export default function HrDashboard() {
@@ -80,6 +81,7 @@ export default function HrDashboard() {
         />
         <Route path="/hiring-management" element={<HiringManagement />} />
         <Route path="/employ-profile/:id" element={<Profile></Profile>}></Route>
+        <Route path="/document-review/:id" element={<DocumentReview></DocumentReview>}></Route>
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
