@@ -6,6 +6,11 @@ const fileSchema = new mongoose.Schema({
     filePath: String,
     access: String,
     hrAccess: String,
+    optInfo: {
+        type: String, // e.g. 'optReceipt', 'optEAD', 'I983', 'I20'
+        status: String, // e.g., 'pending', 'rejected', 'approved'
+        feedback: String,
+    },
     uploadDate: { type: Date, default: Date.now }
 });
 

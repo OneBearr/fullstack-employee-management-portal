@@ -31,7 +31,8 @@ const visaStatusSchema = new mongoose.Schema({
             default: 'no submit'// e.g., 'no submit', 'pending', 'approved', 'rejected'
         },
         file: { type: mongoose.Schema.Types.ObjectId, ref: 'File' }
-    }
+    },
+    feedback: String
 });
 
 const VisaStatus = mongoose.model("VisaStatus", visaStatusSchema);
