@@ -382,21 +382,6 @@ export default function PersonalInfo() {
             noStyle
           >
             {({ getFieldValue }) => {
-              if (getFieldValue(['workAuth', 'isCitizen']) === 'no' && getFieldValue(['workAuth', 'workAuthType']) === 'F1CPTOPT') {
-                return (
-                  <Form.Item
-                    name="optReceipt"
-                    label="Upload your OPT Receipt"
-                    // valuePropName="fileList"
-                    // getValueFromEvent={normFile}
-                    rules={[{ required: true, message: 'Please upload you OPT receipt!' }]}
-                  >
-                    <Upload name="optReceipt" listType="text"  >
-                      <Button icon={<UploadOutlined />}>Click to upload</Button>
-                    </Upload>
-                  </Form.Item>
-                );
-              }
 
               if (getFieldValue(['workAuth', 'isCitizen']) === 'no' && getFieldValue(['workAuth', 'workAuthType']) === 'other') {
                 return (

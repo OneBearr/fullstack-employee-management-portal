@@ -44,6 +44,9 @@ export default function OnboardApplication() {
             personalInfoData.onboardingInfo = info.onboardingInfo;
             try {
                 await dispatch(updatePersonalInfo({ personalInfoData, userID, token }));
+                if (values.optReceipt[0]) {
+                    await submitOptReceiptAPI(values.optReceipt[0].originFileObj, token, 'optReceipt');
+                }
                 message.success('Onboarding application updated successfully!');
             } catch (error) {
                 message.error(`Submission failed: ${error.message}`);
@@ -308,7 +311,7 @@ export default function OnboardApplication() {
                                             }
                                             return e && e.fileList;
                                         }}
-                                        rules={[{ required: true, message: 'Please upload you OPT receipt!' }]}
+                                        rules={[{ required: !(files.some(file => file.fileType === 'optReceipt')), message: 'Please upload you OPT receipt!' }]}
                                     >
                                         <Upload beforeUpload={() => false} listType="text " maxCount={1} disabled={isFormDisabled}>
                                             <Button icon={<UploadOutlined />}>Click to upload</Button>
@@ -491,7 +494,7 @@ export default function OnboardApplication() {
                     {files.map((file, index) => (
                         <Form.Item
                             key={index}
-                            label={`File ${index + 1}`}
+                            label={`${file.fileType}: `}
                             name={`fileName${index}`}
                         >
                             <div className='flex justify-between'>
