@@ -3,24 +3,24 @@ import { submitPersonalInfoAPI, getPersonalInfoAPI, updatePersonalInfoAPI } from
 
 export const fetchPersonalInfo = createAsyncThunk(
     'personalInfo/fetchPersonalInfo',
-    async (userID) => {
-        const responseData = await getPersonalInfoAPI(userID);
+    async ({ userID, token }) => {
+        const responseData = await getPersonalInfoAPI(userID, token);
         return responseData
     }
 );
 
 export const submitPersonalInfo = createAsyncThunk(
     'personalInfo/submitPersonalInfo',
-    async ({ personalInfoData, userID }) => {
-        const responseData = await submitPersonalInfoAPI(personalInfoData, userID);
+    async ({ personalInfoData, userID, token }) => {
+        const responseData = await submitPersonalInfoAPI(personalInfoData, userID, token);
         return responseData
     }
 );
 
 export const updatePersonalInfo = createAsyncThunk(
     'personalInfo/updatePersonalInfo',
-    async ({ personalInfoData, userID }) => {
-        const responseData = await updatePersonalInfoAPI(personalInfoData, userID);
+    async ({ personalInfoData, userID, token }) => {
+        const responseData = await updatePersonalInfoAPI(personalInfoData, userID, token);
         return responseData
     }
 );

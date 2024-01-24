@@ -26,6 +26,7 @@ router.post('/opt', authenticate, upload.single("opt"), async (req, res) => {
             user: req.user.id,
             filePath: "../upload",
             fileName: req.file.filename,
+            originalFileName: req.file.originalname,
             access: `http://localhost:3000/api/download/${req.file.filename}`,
             hrAccess: `http://localhost:3000/api/hrDownload/${req.file.filename}`
         });

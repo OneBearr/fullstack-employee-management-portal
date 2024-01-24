@@ -9,11 +9,12 @@ import ErrorPage from "../../ErrorPage/ErrorPage";
 import OnboardApplication from "../OnboardApplication/OnboardApplication";
 import { menuItemsUnapproved, menuItemsApproved } from './menuItems';
 import { fetchPersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
+import { fetchPersonalFiles } from '../../../redux/personalFiles/personalFilesSlice';
 
 export default function EmployeeDashboard() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { username, userID } = useSelector((state) => state.user.info);
+    const { username, userID, token } = useSelector((state) => state.user.info);
     const { status } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
     const [isApproved, setIsApproved] = useState(false);
 
@@ -22,9 +23,10 @@ export default function EmployeeDashboard() {
         if (!username) {
             navigate("/", { replace: true });
         } else {
-            dispatch(fetchPersonalInfo(userID));
+            dispatch(fetchPersonalInfo({userID, token}));
+            dispatch(fetchPersonalFiles({userID, token}));
         }
-    }, [dispatch, navigate, userID, username]);
+    }, [dispatch, navigate, token, userID, username]);
 
     useEffect(() => {
         setIsApproved(status === "approved");

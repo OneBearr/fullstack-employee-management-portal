@@ -5,6 +5,7 @@ import { Form, Input, Button, Modal, DatePicker, Upload, Select, Space, Avatar, 
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
+import { downloadPersonalFileAPI, previewPersonalFileAPI } from '../../../services/personalFiles';
 const { Option } = Select;
 
 export default function PersonalInfo() {
@@ -12,7 +13,8 @@ export default function PersonalInfo() {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { registerEmail, userID } = useSelector((state) => state.user.info);
+  const { registerEmail, userID, token } = useSelector((state) => state.user.info);
+  const { files } = useSelector((state) => state.personalFiles);
   const { info, loading } = useSelector((state) => state.personalInfo ?? {});
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function PersonalInfo() {
     } else if (!info.firstName) {   // if no submission yet, redirect to the onboarding page
       navigate("/employee-dashboard/onboarding", { replace: true });
     }
-  }, []);
+  }, [info.firstName, navigate, userID]);
 
   const handleEdit = () => {
     form.resetFields();
@@ -62,13 +64,22 @@ export default function PersonalInfo() {
     };
 
     try {
-      await dispatch(updatePersonalInfo({ personalInfoData, userID }));
+      await dispatch(updatePersonalInfo({ personalInfoData, userID, token }));
       message.success('Information updated successfully!');
     } catch (error) {
       message.error(`Information update failed: ${error.message}`);
     }
     console.log(personalInfoData);
   };
+
+  const handleFileDownload = async (accessURL) => {
+    await downloadPersonalFileAPI(accessURL, token)
+  }
+
+  const handleFilePreview = async (accessURL) => {
+    await previewPersonalFileAPI(accessURL, token)
+  }
+
 
   const initialValues = useMemo(() => {
     return {
@@ -620,6 +631,23 @@ export default function PersonalInfo() {
               </>
             )}
           </Form.List>
+
+          {/* Uploaded Documents */}
+          <div className='text-xl font-bold'>Uploaded Documents:</div><br />
+          {files.map((file, index) => (
+            <Form.Item
+              key={index}
+              label={`File ${index + 1}`}
+              name={`fileName${index}`}
+            >
+              <div className='flex justify-between'>
+                <span>{file.originalFileName}</span>
+                <u onClick={() => handleFilePreview(file.access)}>preview</u>
+                <u onClick={() => handleFileDownload(file.access)}>download</u>
+              </div>
+            </Form.Item>
+          ))}
+
         </Form>
       </div>
     </div>

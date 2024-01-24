@@ -6,6 +6,7 @@ import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/i
 import moment from 'moment';
 import { submitPersonalInfo, updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
 import { submitOptReceiptAPI } from '../../../services/document';
+import { downloadPersonalFileAPI, previewPersonalFileAPI } from '../../../services/personalFiles';
 const { Option } = Select;
 
 export default function OnboardApplication() {
@@ -14,6 +15,7 @@ export default function OnboardApplication() {
     const { registerEmail, userID, token } = useSelector((state) => state.user.info);
     const { status, feedback } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
     const { info, loading } = useSelector((state) => state.personalInfo ?? {});
+    const { files } = useSelector((state) => state.personalFiles);
     const isFormDisabled = status === 'pending';
     const defaultAvatarUrl = 'https://www.pngitem.com/pimgs/m/137-1370051_avatar-generic-avatar-hd-png-download.png';
 
@@ -41,15 +43,15 @@ export default function OnboardApplication() {
         if (status === "rejected") {
             personalInfoData.onboardingInfo = info.onboardingInfo;
             try {
-                await dispatch(updatePersonalInfo({ personalInfoData, userID }));
-                message.success('Onboarding application submitted successfully!');
+                await dispatch(updatePersonalInfo({ personalInfoData, userID, token }));
+                message.success('Onboarding application updated successfully!');
             } catch (error) {
                 message.error(`Submission failed: ${error.message}`);
             }
         } else {
             try {
-                await dispatch(submitPersonalInfo({ personalInfoData, userID }));
-                await submitOptReceiptAPI(values.optReceipt[0].originFileObj, token);
+                await dispatch(submitPersonalInfo({ personalInfoData, userID, token }));
+                await submitOptReceiptAPI(values.optReceipt[0].originFileObj, token, 'optReceipt');
                 message.success('Onboarding application submitted successfully!');
             } catch (error) {
                 message.error(`Submission failed: ${error.message}`);
@@ -58,6 +60,14 @@ export default function OnboardApplication() {
         console.log(personalInfoData);
         navigate(0);
     };
+
+    const handleFileDownload = async (accessURL) => {
+        await downloadPersonalFileAPI(accessURL, token)
+    }
+
+    const handleFilePreview = async (accessURL) => {
+        await previewPersonalFileAPI(accessURL, token)
+    }
 
     const initialValues = useMemo(() => {
         if (status === 'pending' || status === 'rejected') {
@@ -300,11 +310,9 @@ export default function OnboardApplication() {
                                         }}
                                         rules={[{ required: true, message: 'Please upload you OPT receipt!' }]}
                                     >
-                                        {isFormDisabled ? "Wait to be reviewed by HR" :
-                                            <Upload beforeUpload={() => false} listType="text " maxCount={1}>
-                                                <Button icon={<UploadOutlined />}>Click to upload</Button>
-                                            </Upload>
-                                        }
+                                        <Upload beforeUpload={() => false} listType="text " maxCount={1} disabled={isFormDisabled}>
+                                            <Button icon={<UploadOutlined />}>Click to upload</Button>
+                                        </Upload>
                                     </Form.Item>
                                 );
                             }
@@ -477,6 +485,23 @@ export default function OnboardApplication() {
                             </>
                         )}
                     </Form.List>
+
+                    {/* Uploaded Documents */}
+                    <div className='text-xl font-bold'>Uploaded Documents:</div><br />
+                    {files.map((file, index) => (
+                        <Form.Item
+                            key={index}
+                            label={`File ${index + 1}`}
+                            name={`fileName${index}`}
+                        >
+                            <div className='flex justify-between'>
+                                <span>{file.originalFileName}</span>
+                                <u onClick={() => handleFilePreview(file.access)}>preview</u>
+                                <u onClick={() => handleFileDownload(file.access)}>download</u>
+                            </div>
+                        </Form.Item>
+                    ))}
+
                     {!isFormDisabled &&
                         <Form.Item>
                             <Button type="primary" htmlType="submit">
