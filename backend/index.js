@@ -13,6 +13,7 @@ const uploadRouter = require('./routers/upload');
 const downloadRouter = require('./routers/download');
 const hrDownloadRouter = require('./routers/hrDownload');
 const hrApplicationRouter = require('./routers/hrApplication')
+const hrFileRouter = require('./routers/hrFile');
 const fileRouter = require('./routers/file');
 
 connectDB();
@@ -30,6 +31,7 @@ app.use('/api/files', fileRouter);
 
 app.use('/api/hrDownload', hrDownloadRouter);
 app.use('/api/hrApplications', hrApplicationRouter);
+app.use('/api/hrFiles', hrFileRouter);
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');
