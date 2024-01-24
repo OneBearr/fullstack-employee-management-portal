@@ -1,6 +1,7 @@
-const submitOptReceiptAPI = async (documentFile, token) => {
+const submitOptReceiptAPI = async (documentFile, token, optDocType) => {
     const formData = new FormData();
     formData.append('opt', documentFile);
+    formData.append('optDocType', optDocType);
     const response = await fetch(`http://localhost:3000/api/upload/opt`, {
         method: 'POST',
         headers: {
