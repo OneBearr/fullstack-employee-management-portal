@@ -1,25 +1,23 @@
-const File = require('../models/file')
 const APIError = require('../errors')
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user');
+const VisaStatus = require('../models/visaStatus');
 
-const getAllFiles = async (req, res, next) => {
+const getAllVisaStatus = async (req, res, next) => {
     try {
-        const files = await File.find();
-        return res.status(200).json(files);
+        const visaStatus = await VisaStatus.find();
+        res.status(200).json(visaStatus);
+        return;
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
         return next(new APIError(error.message, 500));
     }
-};
-
-const getAllFilesByUID = async (req, res, next) => {
+}
+const getVisaStatusByUID = async (req, res, next) => {
     let uid = req.params?.uid;
-
     if (!uid || !ObjectId.isValid(uid)) {
         return next(new APIError("User id not valid!", 400));
     }
-
     try {
         const user = await User.findById(uid);
 
@@ -27,8 +25,8 @@ const getAllFilesByUID = async (req, res, next) => {
             return next(new APIError("No user found for this uid!", 400));
         }
 
-        const files = await File.find({ user: uid });
-        return res.status(200).json(files);
+        const visaStatus = await VisaStatus.findOne({ user: uid });
+        return res.status(200).json(visaStatus);
     } catch (err) {
         console.error(err.message);
         return next(new APIError(err.message, 500));
@@ -36,6 +34,6 @@ const getAllFilesByUID = async (req, res, next) => {
 }
 
 module.exports = {
-    getAllFiles,
-    getAllFilesByUID
+    getVisaStatusByUID,
+    getAllVisaStatus
 }
