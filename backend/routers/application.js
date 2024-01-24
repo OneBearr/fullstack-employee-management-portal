@@ -10,7 +10,6 @@ const { authenticate, isOwner } = require('../middlewares/auth')
 const router = express.Router();
 
 // api/applications
-router.get('/', getAllApplication);
 
 // api/applications/:uid
 router.get('/:uid', authenticate, isOwner, getOneApplication);

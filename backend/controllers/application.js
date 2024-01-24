@@ -72,6 +72,63 @@ const createApplication = async (req, res, next) => {
     }
 };
 
+const approveApplication = async (req, res, next) => {
+    let uid = req.params?.uid;
+
+    if (!uid || !ObjectId.isValid(uid)) {
+        return next(new APIError("User id not valid!", 400));
+    }
+    try {
+        const user = await User.findById(uid);
+
+        if (!user) {
+            return next(new APIError("No user found for this uid!", 400));
+        }
+
+        let application = await PersonalInformation.findOne({ user: uid });
+
+        if (!application) {
+            return next(new APIError("No application found for this UID!", 400));
+        }
+        application.onboardingInfo.feedback = '';
+        application.onboardingInfo.status = "approved";
+
+        application = await application.save();
+        res.status(200).json(application);
+    } catch (error) {
+        console.error(error);
+        return next(new APIError(error.message, 500));
+    }
+};
+const rejectApplication = async (req, res, next) => {
+    let uid = req.params?.uid;
+
+    if (!uid || !ObjectId.isValid(uid)) {
+        return next(new APIError("User id not valid!", 400));
+    }
+
+    try {
+        const user = await User.findById(uid);
+
+        if (!user) {
+            return next(new APIError("No user found for this uid!", 400));
+        }
+
+        let application = await PersonalInformation.findOne({ user: uid });
+
+        if (!application) {
+            return next(new APIError("No application found for this UID!", 400));
+        }
+        application.onboardingInfo.feedback = req.body.feedback;
+        application.onboardingInfo.status = "rejected";
+
+        application = await application.save();
+        res.status(200).json(application);
+    } catch (error) {
+        console.error(error);
+        return next(new APIError(error.message, 500));
+    }
+}
 const updateApplication = async (req, res, next) => {
     let uid = req.params?.uid;
 
@@ -115,5 +172,7 @@ module.exports = {
     getAllApplication,
     getOneApplication,
     createApplication,
-    updateApplication
+    updateApplication,
+    rejectApplication,
+    approveApplication
 }
