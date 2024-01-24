@@ -14,7 +14,12 @@ const downloadRouter = require('./routers/download');
 const hrDownloadRouter = require('./routers/hrDownload');
 const hrApplicationRouter = require('./routers/hrApplication')
 const fileRouter = require('./routers/file');
+
+const visaStatusRouter = require('./routers/visaStatus');
+const hrVisaStatusRouter = require('./routers/hrVisaStatus');
+
 const regRouter = require('./routers/registration');
+
 
 connectDB();
 
@@ -28,10 +33,15 @@ app.use('/api/users', userRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/download', downloadRouter);
 app.use('/api/files', fileRouter);
+app.use('/api/visaStatus', visaStatusRouter);
 
 app.use('/api/hrDownload', hrDownloadRouter);
 app.use('/api/hrApplications', hrApplicationRouter);
+
+app.use('/api/hrVisaStatus', hrVisaStatusRouter);
+
 app.use('/api/registrations', regRouter);
+
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');
