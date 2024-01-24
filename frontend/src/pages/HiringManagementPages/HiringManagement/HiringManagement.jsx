@@ -1,32 +1,65 @@
 import { Link, useLocation } from "react-router-dom";
 import ErrorPage from "../../ErrorPage/ErrorPage";
-import { Tabs, List, Input, Button, Table } from "antd";
+import { Tabs, List, Input, Button, Table, Tag } from "antd";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Registration(props) {
+function Registration() {
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      ellipsis: true
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      ellipsis: true
     },
     {
       title: "Registration link",
       dataIndex: "link",
       key: "link",
+      ellipsis: true
     },
     {
       title: "Status",
-      dataIndex: "status",
       key: "status",
+      render: (_, {status, exp}) => {
+        if(status){
+          return <Tag color="green">Submitted</Tag>
+        }
+        else{
+          if(Date.parse(exp) < Date.parse(Date.now())){
+            return <Tag color="yellow">Waiting</Tag>
+          }
+          else{
+            return <Tag color="red">Expired</Tag>
+          }
+        }
+      }
     },
   ];
   
-  const data = [];
+  const [data, setData] = useState([]);
+
+  useEffect(()=>{
+    fetch("http://localhost:3000/api/registrations/")
+    .then((res)=>res.json())
+    .then((items)=>{
+      setData(items.map((item)=>{
+        return {
+          name: item.name,
+          email: item.email,
+          link: item.link,
+          status: item.submitted,
+          exp: item.expiration
+        }
+      }))
+    })
+  },[]);
 
   return (
     <>
@@ -35,37 +68,21 @@ function Registration(props) {
         <Button type="primary">Generate token and send email</Button>
       </div>
       <p>History</p>
-      <Table columns={columns} dataSource={data}></Table>
+      <Table className="max-w-full" columns={columns} dataSource={data}></Table>
     </>
   );
 }
 
-function ReviewApplications(props) {
+function ReviewApplications() {
+  const { token } = useSelector((state) => state.user.info);
+
   const onChange = (key) => {
-    console.log(key);
+
   };
 
-  const pendingApplications = [
-    {
-      name: "Haoru Jiang",
-      email: "haorujiang1997@gmail.com",
-      appliction_id: "123",
-    },
-  ];
-  const rejectedApplications = [
-    {
-        name: "Haoru Jiang",
-        email: "haorujiang1997@gmail.com",
-        appliction_id: "",
-      },
-  ];
-  const approvedApplications = [
-    {
-        name: "Haoru Jiang",
-        email: "haorujiang1997@gmail.com",
-        appliction_id: "",
-      },
-  ];
+  const [pendingApplications, setPendingApplications] = useState([]);
+  const [rejectedApplications, setRejectedApplications] = useState([]);
+  const [approvedApplications, setApprovedApplications] = useState([]);
 
   const items = [
     {
@@ -78,9 +95,9 @@ function ReviewApplications(props) {
           dataSource={pendingApplications}
           renderItem={(item) => (
             <List.Item
-              actions={[<Link key="list-view-application" to={`/hr-dashboard/employ-profile/${item.appliction_id}`} target="_blank">View Application</Link>]}
+              actions={[<Link key="list-view-application" to={`/hr-dashboard/employ-profile/${item._id}`} target="_blank">View Application</Link>]}
             >
-              <p>{item.name}</p>
+              <p>{item.firstName} {item.middleName} {item.lastName}</p>
               <p>{item.email}</p>
             </List.Item>
           )}
@@ -97,7 +114,7 @@ function ReviewApplications(props) {
           dataSource={rejectedApplications}
           renderItem={(item) => (
             <List.Item>
-              <p>{item.name}</p>
+              <p>{item.firstName} {item.middleName} {item.lastName}</p>
               <p>{item.email}</p>
             </List.Item>
           )}
@@ -114,7 +131,7 @@ function ReviewApplications(props) {
           dataSource={approvedApplications}
           renderItem={(item) => (
             <List.Item>
-              <p>{item.name}</p>
+              <p>{item.firstName} {item.middleName} {item.lastName}</p>
               <p>{item.email}</p>
             </List.Item>
           )}
@@ -122,6 +139,35 @@ function ReviewApplications(props) {
       ),
     },
   ];
+
+  useEffect(()=>{
+    fetch("http://localhost:3000/api/hrApplications", {
+      headers: {
+          "x-auth-token": token,
+      }
+    })
+    .then((res)=>res.json())
+    .then((data)=>{
+      const approvedList = [];
+      const rejectedList = [];
+      const pendingList = [];
+      data.forEach(element => {
+        if(element.onboardingInfo?.status === "approved"){
+          approvedList.push(element);
+        }
+        else if (element.onboardingInfo?.status === "pending") {
+          pendingList.push(element);
+        }
+        else if (element.onboardingInfo?.status === "rejected") {
+          rejectedList.push(element);
+        }
+      });
+      setPendingApplications(pendingList);
+      setRejectedApplications(rejectedList);
+      setApprovedApplications(approvedList);
+    })
+  },[]);
+
   return <Tabs defaultActiveKey="1" items={items} onChange={onChange}></Tabs>;
 }
 
