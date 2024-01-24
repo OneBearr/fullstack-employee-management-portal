@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Form, Input, Button, Modal, DatePicker, Upload, Select, Space, Avatar, message } from "antd";
-import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Modal, DatePicker, Select, Avatar, message } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
 import { downloadPersonalFileAPI, previewPersonalFileAPI } from '../../../services/personalFiles';
@@ -13,18 +13,22 @@ export default function PersonalInfo() {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  const { registerEmail, userID, token } = useSelector((state) => state.user.info);
-  const { files } = useSelector((state) => state.personalFiles);
-  const { info, loading } = useSelector((state) => state.personalInfo ?? {});
+  let { userID, token, isHR } = useSelector((state) => state.user.info);
+  let { files } = useSelector((state) => state.personalFiles);
+  let { info, loading } = useSelector((state) => state.personalInfo ?? {});
+  // if you are HR, try to get the 'files' and 'info' of the employee by using your HR APIs 
+  // may need before render or re-render the Form
 
   useEffect(() => {
     // if no user in the store, redirect to the welcome home page
-    if (!userID) {
-      navigate("/employee-dashboard", { replace: true });
-    } else if (!info.firstName) {   // if no submission yet, redirect to the onboarding page
-      navigate("/employee-dashboard/onboarding", { replace: true });
+    if (!isHR) {
+      if (!userID) {
+        navigate("/employee-dashboard", { replace: true });
+      } else if (!info.firstName) {   // if no submission yet, redirect to the onboarding page
+        navigate("/employee-dashboard/onboarding", { replace: true });
+      }
     }
-  }, [info.firstName, navigate, userID]);
+  }, [info.firstName, userID, isHR]);
 
   const handleEdit = () => {
     form.resetFields();
@@ -73,17 +77,22 @@ export default function PersonalInfo() {
   };
 
   const handleFileDownload = async (accessURL) => {
-    await downloadPersonalFileAPI(accessURL, token)
+    if (!isHR) {
+      await downloadPersonalFileAPI(accessURL, token);  // employee token here!
+    }
+    // if you are HR, try to use your HR api to handle the download
   }
 
   const handleFilePreview = async (accessURL) => {
-    await previewPersonalFileAPI(accessURL, token)
+    if (!isHR) {
+      await previewPersonalFileAPI(accessURL, token);   // employee token here!
+    }
+    // if you are HR, try to use your HR api to handle the preview
   }
-
 
   const initialValues = useMemo(() => {
     return {
-      email: registerEmail,
+      email: info.email,
       firstName: info.firstName,
       lastName: info.lastName,
       middleName: info.middleName,
@@ -106,7 +115,7 @@ export default function PersonalInfo() {
         endDate: moment.utc(info.employmentDetails.endDate)
       }
     }
-  }, [registerEmail, info]);
+  }, [info]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -116,7 +125,7 @@ export default function PersonalInfo() {
     <div id="content">
       <div className='flex justify-center text-3xl font-bold mb-5'>Personal Information Page</div>
       <div className="flex justify-end">
-        {isEditing ? (
+        {isHR && (isEditing ? (
           <div>
             <Button onClick={handleSave} type="primary" >
               Save
@@ -125,7 +134,7 @@ export default function PersonalInfo() {
           </div>
         ) : (
           <Button onClick={handleEdit}>Edit</Button>
-        )}
+        ))}
       </div>
       <div className='w-full flex justify-center'>
         <Form
@@ -622,7 +631,7 @@ export default function PersonalInfo() {
           {files.map((file, index) => (
             <Form.Item
               key={index}
-              label={`File ${index + 1}`}
+              label={`${file.fileType}: `}
               name={`fileName${index}`}
             >
               <div className='flex justify-between'>
@@ -632,7 +641,6 @@ export default function PersonalInfo() {
               </div>
             </Form.Item>
           ))}
-
         </Form>
       </div>
     </div>

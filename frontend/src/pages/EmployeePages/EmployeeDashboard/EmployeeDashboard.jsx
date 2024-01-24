@@ -23,10 +23,10 @@ export default function EmployeeDashboard() {
         if (!username) {
             navigate("/", { replace: true });
         } else {
-            dispatch(fetchPersonalInfo({userID, token}));
-            dispatch(fetchPersonalFiles({userID, token}));
+            dispatch(fetchPersonalInfo({ userID, token }));
+            dispatch(fetchPersonalFiles({ userID, token }));
         }
-    }, [dispatch, navigate, token, userID, username]);
+    }, [token, userID, username]);
 
     useEffect(() => {
         setIsApproved(status === "approved");
@@ -35,7 +35,7 @@ export default function EmployeeDashboard() {
         } else {
             navigate("/employee-dashboard/onboarding");
         }
-    }, [isApproved, navigate, status]);
+    }, [isApproved, status]);
 
     return (
         <div id='content' className='w-1/2'>
