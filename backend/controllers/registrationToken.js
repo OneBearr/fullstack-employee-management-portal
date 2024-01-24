@@ -15,6 +15,7 @@ const getHistory = async (req, res, next) => {
             obj.submitted = !application ? false : true;
             obj.name = !application ? "" : `${application.firstName} ${application.lastName}`;
             obj.link = `http://localhost:5173/register/${reg.token}`
+            obj.expiration = reg.expiration;
 
             result.push(obj);
         }
