@@ -3,7 +3,16 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user');
 const VisaStatus = require('../models/visaStatus');
 
-
+const getAllVisaStatus = async (req, res, next) => {
+    try {
+        const visaStatus = await VisaStatus.find();
+        res.status(200).json(visaStatus);
+        return;
+    } catch (error) {
+        console.error(error.message);
+        return next(new APIError(error.message, 500));
+    }
+}
 const getVisaStatusByUID = async (req, res, next) => {
     let uid = req.params?.uid;
     if (!uid || !ObjectId.isValid(uid)) {
@@ -25,5 +34,6 @@ const getVisaStatusByUID = async (req, res, next) => {
 }
 
 module.exports = {
-    getVisaStatusByUID
+    getVisaStatusByUID,
+    getAllVisaStatus
 }

@@ -15,6 +15,7 @@ const hrDownloadRouter = require('./routers/hrDownload');
 const hrApplicationRouter = require('./routers/hrApplication')
 const fileRouter = require('./routers/file');
 const visaStatusRouter = require('./routers/visaStatus');
+const hrVisaStatusRouter = require('./routers/hrVisaStatus');
 
 connectDB();
 
@@ -29,8 +30,10 @@ app.use('/api/upload', uploadRouter);
 app.use('/api/download', downloadRouter);
 app.use('/api/files', fileRouter);
 app.use('/api/visaStatus', visaStatusRouter);
+
 app.use('/api/hrDownload', hrDownloadRouter);
 app.use('/api/hrApplications', hrApplicationRouter);
+app.use('/api/hrVisaStatus', hrVisaStatusRouter);
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');
