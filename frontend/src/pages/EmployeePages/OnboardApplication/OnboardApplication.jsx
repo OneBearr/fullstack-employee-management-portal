@@ -506,7 +506,7 @@ export default function OnboardApplication() {
                     {!isFormDisabled &&
                         <Form.Item>
                             <Button type="primary" htmlType="submit">
-                                Submit
+                                {status === "rejected" ? "Resubmit" : "Submit"}
                             </Button>
                         </Form.Item>
                     }

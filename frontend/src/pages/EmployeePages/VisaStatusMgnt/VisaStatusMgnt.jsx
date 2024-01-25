@@ -9,6 +9,7 @@ import { submitOptReceiptAPI } from '../../../services/document';
 export default function VisaStatusMgnt() {
   const navigate = useNavigate();
   const { token } = useSelector((state) => state.user.info);
+  const { status: applicationStatus } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
   const { files } = useSelector((state) => state.personalFiles);
   const { visaStatus } = useSelector((state) => state.employeeVisaStatus);
   const [fileList, setFileList] = useState([]);
@@ -33,8 +34,7 @@ export default function VisaStatusMgnt() {
       return;
     }
     try {
-      const response = await submitOptReceiptAPI(fileList[0].originFileObj, token, fileType);
-      console.log(response)
+      await submitOptReceiptAPI(fileList[0].originFileObj, token, fileType);
       message.success('Document submitted successfully!');
       navigate(0);
     } catch (error) {
@@ -66,12 +66,14 @@ export default function VisaStatusMgnt() {
                 <u onClick={() => handleFileDownload(optReceiptFile.access)}>download</u>
               </div>
               <div className='flex justify-around font-bold mt-5 mb-3'>
-                {visaStatus.optReceipt.status == "pending" && <div>Waiting for HR to approve your OPT Receipt</div>}
-                {visaStatus.optReceipt.status == "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
-                {visaStatus.optReceipt.status == "approved" && !visaStatus.optEAD.file &&
+                {visaStatus.optReceipt.status === "pending" && <div>Waiting for HR to approve your OPT Receipt</div>}
+                {visaStatus.optReceipt.status === "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
+                {visaStatus.optReceipt.status === "approved" && !visaStatus.optEAD.file && applicationStatus === "approved" &&
                   <div>Please upload a copy of your OPT EAD</div>}
+                {visaStatus.optReceipt.status === "approved" && applicationStatus !== "approved" &&
+                  <div>Please make sure your onboarding application is approved by HR first</div>}
               </div>
-              {visaStatus.optReceipt.status == "rejected" &&
+              {visaStatus.optReceipt.status === "rejected" &&
                 <div className='flex justify-around'>
                   <Upload
                     beforeUpload={() => false}
@@ -90,7 +92,7 @@ export default function VisaStatusMgnt() {
             </Form.Item>
           }
           {/* Upload next document: OPT EAD */}
-          {(!visaStatus.optEAD.file && visaStatus.optReceipt.status == "approved") &&
+          {(!visaStatus.optEAD.file && visaStatus.optReceipt.status === "approved" && applicationStatus === "approved") &&
             <Form.Item
               label={<span className='font-bold'>OPT EAD: </span>}
             >
@@ -123,12 +125,12 @@ export default function VisaStatusMgnt() {
                 <u onClick={() => handleFileDownload(optEADFile.access)}>download</u>
               </div>
               <div className='flex justify-around font-bold mt-5 mb-3'>
-                {visaStatus.optEAD.status == "pending" && <div>Waiting for HR to approve your OPT EAD</div>}
-                {visaStatus.optEAD.status == "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
-                {visaStatus.optEAD.status == "approved" && !visaStatus.I983.file &&
+                {visaStatus.optEAD.status === "pending" && <div>Waiting for HR to approve your OPT EAD</div>}
+                {visaStatus.optEAD.status === "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
+                {visaStatus.optEAD.status === "approved" && !visaStatus.I983.file &&
                   <div>Please download and fill out the I-983 form</div>}
               </div>
-              {visaStatus.optEAD.status == "rejected" &&
+              {visaStatus.optEAD.status === "rejected" &&
                 <div className='flex justify-around'>
                   <Upload
                     beforeUpload={() => false}
@@ -147,7 +149,7 @@ export default function VisaStatusMgnt() {
             </Form.Item>
           }
           {/* Upload next document: I983 */}
-          {(!visaStatus.I983.file && visaStatus.optEAD.status == "approved") &&
+          {(visaStatus.I983.file && visaStatus.optEAD.status === "approved") &&
             <Form.Item
               label={<span className='font-bold'>I983: </span>}
             >
@@ -187,12 +189,12 @@ export default function VisaStatusMgnt() {
                 <u onClick={() => handleFileDownload(I983File.access)}>download</u>
               </div>
               <div className='flex justify-around font-bold mt-5 mb-3'>
-                {visaStatus.I983.status == "pending" && <div>Waiting for HR to approve and sign your I983</div>}
-                {visaStatus.I983.status == "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
-                {visaStatus.I983.status == "approved" && !visaStatus.I20.file &&
+                {visaStatus.I983.status === "pending" && <div>Waiting for HR to approve and sign your I983</div>}
+                {visaStatus.I983.status === "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
+                {visaStatus.I983.status === "approved" && !visaStatus.I20.file &&
                   <div>Please send the I-983 along with all necessary documents to your school and upload the new I-20</div>}
               </div>
-              {visaStatus.I983.status == "rejected" &&
+              {visaStatus.I983.status === "rejected" &&
                 <div className='flex justify-around'>
                   <Upload
                     beforeUpload={() => false}
@@ -211,7 +213,7 @@ export default function VisaStatusMgnt() {
             </Form.Item>
           }
           {/* Upload next document: I20 */}
-          {(!visaStatus.I20.file && visaStatus.I983.status == "approved") &&
+          {(!visaStatus.I20.file && visaStatus.I983.status === "approved") &&
             <Form.Item
               label={<span className='font-bold'>I20: </span>}
             >
@@ -244,11 +246,11 @@ export default function VisaStatusMgnt() {
                 <u onClick={() => handleFileDownload(I20File.access)}>download</u>
               </div>
               <div className='flex justify-around font-bold mt-5 mb-3'>
-                {visaStatus.I20.status == "pending" && <div>Waiting for HR to approve your I20</div>}
-                {visaStatus.I20.status == "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
-                {visaStatus.I20.status == "approved" && <div>Congratulation! All documents have been approved.</div>}
+                {visaStatus.I20.status === "pending" && <div>Waiting for HR to approve your I20</div>}
+                {visaStatus.I20.status === "rejected" && <div>Feedback: {visaStatus.feedback}</div>}
+                {visaStatus.I20.status === "approved" && <div>Congratulation! All documents have been approved.</div>}
               </div>
-              {visaStatus.I20.status == "rejected" &&
+              {visaStatus.I20.status === "rejected" &&
                 <div className='flex justify-around'>
                   <Upload
                     beforeUpload={() => false}
