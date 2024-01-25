@@ -1,6 +1,8 @@
 const APIError = require('../errors');
 const PersonalInformation = require('../models/personalInformation');
 const User = require('../models/user');
+const VisaStatus = require('../models/visaStatus');
+
 const ObjectId = require('mongoose').Types.ObjectId;
 const getAllApplication = async (req, res, next) => {
     try {
@@ -90,6 +92,12 @@ const approveApplication = async (req, res, next) => {
         if (!application) {
             return next(new APIError("No application found for this UID!", 400));
         }
+        let visaStatus = await VisaStatus.findOne({ user: uid });
+        if (visaStatus) {
+            visaStatus.optReceipt.status = "approved";
+            visaStatus.feedback = "";
+            visaStatus = await visaStatus.save();
+        }
         application.onboardingInfo.feedback = '';
         application.onboardingInfo.status = "approved";
 
@@ -119,6 +127,13 @@ const rejectApplication = async (req, res, next) => {
         if (!application) {
             return next(new APIError("No application found for this UID!", 400));
         }
+        /*
+        let visaStatus = await VisaStatus.findOne({ user: uid });
+        if (visaStatus) {
+            visaStatus.optReceipt.status = "rejected";
+            visaStatus.feedback = req.body.feedback;
+            visaStatus = await visaStatus.save();
+        }*/
         application.onboardingInfo.feedback = req.body.feedback;
         application.onboardingInfo.status = "rejected";
 
