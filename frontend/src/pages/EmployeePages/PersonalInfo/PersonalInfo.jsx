@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Input, Button, Modal, DatePicker, Select, Avatar, message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -8,6 +8,7 @@ import { updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlic
 import { downloadPersonalFileAPI, previewPersonalFileAPI } from '../../../services/personalFiles';
 import { hr_fetchPersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
 import { hr_fetchPersonalFiles } from '../../../redux/personalFiles/personalFilesSlice';
+import { hr_ApproveApplication, hr_RejectApplication } from "../../../services/hr";
 const { Option } = Select;
 
 export default function PersonalInfo() {
@@ -21,6 +22,8 @@ export default function PersonalInfo() {
   // if you are HR, try to get the 'files' and 'info' of the employee by using your HR APIs 
   // may need before render or re-render the Form
   let { id } = useParams();
+  let viewApplication = useLocation().pathname.includes("application");
+  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     // if no user in the store, redirect to the welcome home page
@@ -130,7 +133,7 @@ export default function PersonalInfo() {
 
   return (
     <div id="content" className="pt-2">
-      <div className='flex justify-center text-3xl font-bold mb-5'>Personal Information Page</div>
+      <div className='flex justify-center text-3xl font-bold mb-5'>{viewApplication? "View Application":"Personal Information Page"}</div>
       <div className="flex justify-end pr-20 mr-20">
         {!isHR && (isEditing ? (
           <div>
@@ -723,6 +726,26 @@ export default function PersonalInfo() {
           ))}
         </Form>
       </div>
+
+      {/* Hr view application */}
+      {
+        viewApplication && info.onboardingInfo.status !== "approved" && (
+          <>
+            <div className='text-xl font-bold'>Feedback:</div><br />
+            <Input.TextArea className="mb-2" rows={4} placeholder={info.onboardingInfo.feedback} onChange={(e)=>{
+              setFeedback(e.target.value);
+            }}></Input.TextArea>
+            <div className="flex gap-4 mb-2">
+              <Button type="primary" onClick={async ()=>{
+                await hr_ApproveApplication(id, token);
+              }}>Approve</Button>
+              <Button onClick={async ()=>{
+                await hr_RejectApplication(id, feedback, token)
+              }}>Reject</Button>
+            </div>
+          </>
+        )
+      }
     </div>
   );
 }
