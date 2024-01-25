@@ -35,7 +35,11 @@ const AuthForm = (props) => {
     }
 
     const onFinish = async (values) => {
-        const { username, password } = values;
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+            acc[key] = typeof values[key] === 'string' ? values[key].trim() : values[key];
+            return acc;
+        }, {});
+        const { username, password } = trimmedValues;
 
         if (type === 'login') {
             try {
@@ -80,6 +84,7 @@ const AuthForm = (props) => {
                         rules={[
                             {
                                 required: true,
+                                whitespace: true,
                                 message: "Please input your username!",
                             },
                         ]}
@@ -93,7 +98,9 @@ const AuthForm = (props) => {
                         rules={[
                             {
                                 required: true,
-                                message: "Please input your email!",
+                                whitespace: true,
+                                type: 'email',
+                                message: "Please input a valid email!", 
                             },
                         ]}
                     >
@@ -106,6 +113,7 @@ const AuthForm = (props) => {
                         rules={[
                             {
                                 required: true,
+                                whitespace: true,
                                 message: "Please input your password!",
                             },
                         ]}

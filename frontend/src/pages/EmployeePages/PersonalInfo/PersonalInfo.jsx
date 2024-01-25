@@ -56,13 +56,17 @@ export default function PersonalInfo() {
       alert('At least one emergencyContact');
       return;
     }
+    const trimmedValues = Object.keys(values).reduce((acc, key) => {
+      acc[key] = typeof values[key] === 'string' ? values[key].trim() : values[key];
+      return acc;
+    }, {});
     const personalInfoData = {
-      ...values,
-      dob: values.dob.format('YYYY-MM-DD'),
+      ...trimmedValues,
+      dob: trimmedValues.dob.format('YYYY-MM-DD'),
       employmentDetails: {
-        ...values.employmentDetails,
-        startDate: values.employmentDetails.startDate.format('YYYY-MM-DD'),
-        endDate: values.employmentDetails.endDate.format('YYYY-MM-DD')
+        ...trimmedValues.employmentDetails,
+        startDate: trimmedValues.employmentDetails.startDate.format('YYYY-MM-DD'),
+        endDate: trimmedValues.employmentDetails.endDate.format('YYYY-MM-DD')
       },
       onboardingInfo: info.onboardingInfo
     };
@@ -150,7 +154,10 @@ export default function PersonalInfo() {
           <Form.Item
             name="firstName"
             label="First Name: "
-            rules={[{ required: true, message: 'Please input your first name!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your first name!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -161,7 +168,10 @@ export default function PersonalInfo() {
           <Form.Item
             name="lastName"
             label="Last Name: "
-            rules={[{ required: true, message: 'Please input your last name!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your last name!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -194,7 +204,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['address', 'unitNumber']}
             label="Building/Apt#: "
-            rules={[{ required: true, message: 'Please input your building or apartment number!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your building or apartment number!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -205,7 +218,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['address', 'streetName']}
             label="Street Name: "
-            rules={[{ required: true, message: 'Please input your street name!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your street name!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -216,7 +232,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['address', 'city']}
             label="City: "
-            rules={[{ required: true, message: 'Please input your city!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your city!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -227,7 +246,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['address', 'state']}
             label="State: "
-            rules={[{ required: true, message: 'Please select your state!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please select your state!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -238,7 +260,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['address', 'zip']}
             label="Zip: "
-            rules={[{ required: true, message: 'Please input your zip code!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your zip code!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -252,7 +277,10 @@ export default function PersonalInfo() {
           <Form.Item
             name="cellPhoneNumber"
             label="Cell Phone Number: "
-            rules={[{ required: true, message: 'Please input your cell phone number!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your cell phone number!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -272,7 +300,10 @@ export default function PersonalInfo() {
           <Form.Item
             name="email"
             label="Email: "
-            rules={[{ required: true, message: 'Please input your email!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your email!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -286,7 +317,10 @@ export default function PersonalInfo() {
           <Form.Item
             name="ssn"
             label="Social Security Number: "
-            rules={[{ required: true, message: 'Please input your SSN!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your SSN!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -297,7 +331,10 @@ export default function PersonalInfo() {
           <Form.Item
             name="dob"
             label="Date of Birth: "
-            rules={[{ required: true, message: 'Please input your date of birth!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input your date of birth!'
+            }]}
           >
             {isEditing ? (
               <DatePicker />
@@ -308,7 +345,10 @@ export default function PersonalInfo() {
           <Form.Item
             name="gender"
             label="Gender: "
-            rules={[{ required: true, message: 'Please select your gender!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please select your gender!'
+            }]}
           >
             {isEditing ? (
               <Select placeholder="Select your gender" >
@@ -397,7 +437,10 @@ export default function PersonalInfo() {
                   <Form.Item
                     name={['employmentDetails', 'visaTitle']}
                     label="Specify your Visa Title"
-                    rules={[{ required: true, message: 'Please specify your visa title!' }]}
+                    rules={[{
+                      required: true,
+                      whitespace: true, message: 'Please specify your visa title!'
+                    }]}
                   >
                     {isEditing ? (
                       <Input disabled={!isEditing} />
@@ -422,7 +465,10 @@ export default function PersonalInfo() {
                   <Form.Item
                     name={['employmentDetails', 'startDate']}
                     label="Start Date"
-                    rules={[{ required: true, message: 'Please select your start date!' }]}
+                    rules={[{
+                      required: true,
+                      whitespace: true, message: 'Please select your start date!'
+                    }]}
                   >
                     {isEditing ? (
                       <DatePicker />
@@ -448,7 +494,10 @@ export default function PersonalInfo() {
                   <Form.Item
                     name={['employmentDetails', 'endDate']}
                     label="End Date"
-                    rules={[{ required: true, message: 'Please select your end date!' }]}
+                    rules={[{
+                      required: true,
+                      whitespace: true, message: 'Please select your end date!'
+                    }]}
                   >
                     {isEditing ? (
                       <DatePicker />
@@ -467,7 +516,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['reference', 'firstName']}
             label="First Name"
-            rules={[{ required: true, message: 'Please input the first name!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input the first name!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -478,7 +530,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['reference', 'lastName']}
             label="Last Name"
-            rules={[{ required: true, message: 'Please input the last name!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input the last name!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -489,7 +544,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['reference', 'phone']}
             label="Phone"
-            rules={[{ required: true, message: 'Please input the phone number!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input the phone number!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -500,7 +558,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['reference', 'email']}
             label="Email"
-            rules={[{ required: true, message: 'Please input the email address!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input the email address!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -511,7 +572,10 @@ export default function PersonalInfo() {
           <Form.Item
             name={['reference', 'relationship']}
             label="Relationship"
-            rules={[{ required: true, message: 'Please input the relationship!' }]}
+            rules={[{
+              required: true,
+              whitespace: true, message: 'Please input the relationship!'
+            }]}
           >
             {isEditing ? (
               <Input />
@@ -537,7 +601,10 @@ export default function PersonalInfo() {
                         {...restField}
                         name={[name, 'firstName']}
                         label="First Name"
-                        rules={[{ required: true, message: 'First name is required' }]}
+                        rules={[{
+                          required: true,
+                          whitespace: true, message: 'First name is required'
+                        }]}
                         className='mb-2'
                       >
                         {isEditing ? (
@@ -550,7 +617,10 @@ export default function PersonalInfo() {
                         {...restField}
                         name={[name, 'lastName']}
                         label="Last Name"
-                        rules={[{ required: true, message: 'Last name is required' }]}
+                        rules={[{
+                          required: true,
+                          whitespace: true, message: 'Last name is required'
+                        }]}
                         className='mb-2'
                       >
                         {isEditing ? (
@@ -575,7 +645,10 @@ export default function PersonalInfo() {
                         {...restField}
                         name={[name, 'phone']}
                         label="Phone"
-                        rules={[{ required: true, message: 'Phone is required' }]}
+                        rules={[{
+                          required: true,
+                          whitespace: true, message: 'Phone is required'
+                        }]}
                         className='mb-2'
                       >
                         {isEditing ? (
@@ -588,7 +661,10 @@ export default function PersonalInfo() {
                         {...restField}
                         name={[name, 'email']}
                         label="Email"
-                        rules={[{ required: true, message: 'Email is required' }]}
+                        rules={[{
+                          required: true,
+                          whitespace: true, message: 'Email is required'
+                        }]}
                         className='mb-2'
                       >
                         {isEditing ? (
@@ -601,7 +677,10 @@ export default function PersonalInfo() {
                         {...restField}
                         name={[name, 'relationship']}
                         label="Relationship"
-                        rules={[{ required: true, message: 'Relationship is required' }]}
+                        rules={[{
+                          required: true,
+                          whitespace: true, message: 'Relationship is required'
+                        }]}
                         className='mb-0'
                       >
                         {isEditing ? (

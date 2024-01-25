@@ -30,13 +30,17 @@ export default function OnboardApplication() {
             alert('At least one emergency contact!');
             return;
         }
+        const trimmedValues = Object.keys(values).reduce((acc, key) => {
+            acc[key] = typeof values[key] === 'string' ? values[key].trim() : values[key];
+            return acc;
+        }, {});
         const personalInfoData = {
-            ...values,
-            dob: values.dob.format('YYYY-MM-DD'),
+            ...trimmedValues,
+            dob: trimmedValues.dob.format('YYYY-MM-DD'),
             employmentDetails: {
-                ...values.employmentDetails,
-                startDate: values.employmentDetails.startDate.format('YYYY-MM-DD'),
-                endDate: values.employmentDetails.endDate.format('YYYY-MM-DD')
+                ...trimmedValues.employmentDetails,
+                startDate: trimmedValues.employmentDetails.startDate.format('YYYY-MM-DD'),
+                endDate: trimmedValues.employmentDetails.endDate.format('YYYY-MM-DD')
             },
             profilePictureURL: defaultAvatarUrl
         };
@@ -44,8 +48,8 @@ export default function OnboardApplication() {
             personalInfoData.onboardingInfo = info.onboardingInfo;
             try {
                 await dispatch(updatePersonalInfo({ personalInfoData, userID, token }));
-                if (values.optReceipt[0]) {
-                    await submitOptReceiptAPI(values.optReceipt[0].originFileObj, token, 'optReceipt');
+                if (trimmedValues.optReceipt[0]) {
+                    await submitOptReceiptAPI(trimmedValues.optReceipt[0].originFileObj, token, 'optReceipt');
                 }
                 message.success('Onboarding application updated successfully!');
             } catch (error) {
@@ -54,7 +58,7 @@ export default function OnboardApplication() {
         } else {
             try {
                 await dispatch(submitPersonalInfo({ personalInfoData, userID, token }));
-                await submitOptReceiptAPI(values.optReceipt[0].originFileObj, token, 'optReceipt');
+                await submitOptReceiptAPI(trimmedValues.optReceipt[0].originFileObj, token, 'optReceipt');
                 message.success('Onboarding application submitted successfully!');
             } catch (error) {
                 message.error(`Submission failed: ${error.message}`);
@@ -128,14 +132,20 @@ export default function OnboardApplication() {
                     <Form.Item
                         name="firstName"
                         label="First Name"
-                        rules={[{ required: true, message: 'Please input your first name!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your first name!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name="lastName"
                         label="Last Name"
-                        rules={[{ required: true, message: 'Please input your last name!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your last name!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -156,7 +166,10 @@ export default function OnboardApplication() {
                     <Form.Item
                         name={['address', 'unitNumber']}
                         label="Building/Apt #"
-                        rules={[{ required: true, message: 'Please input your building or apartment number!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your building or apartment number!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -164,7 +177,10 @@ export default function OnboardApplication() {
                     <Form.Item
                         name={['address', 'streetName']}
                         label="Street Name"
-                        rules={[{ required: true, message: 'Please input your street name!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your street name!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -172,7 +188,10 @@ export default function OnboardApplication() {
                     <Form.Item
                         name={['address', 'city']}
                         label="City"
-                        rules={[{ required: true, message: 'Please input your city!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your city!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -180,7 +199,10 @@ export default function OnboardApplication() {
                     <Form.Item
                         name={['address', 'state']}
                         label="State"
-                        rules={[{ required: true, message: 'Please select your state!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please select your state!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -188,7 +210,10 @@ export default function OnboardApplication() {
                     <Form.Item
                         name={['address', 'zip']}
                         label="Zip"
-                        rules={[{ required: true, message: 'Please input your zip code!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your zip code!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -198,7 +223,10 @@ export default function OnboardApplication() {
                     <Form.Item
                         name="cellPhoneNumber"
                         label="Cell Phone Number"
-                        rules={[{ required: true, message: 'Please input your cell phone number!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your cell phone number!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -210,7 +238,10 @@ export default function OnboardApplication() {
                     <Form.Item
                         name="email"
                         label="Default Email"
-                        rules={[{ required: true, message: 'Please input your email!' }]}
+                        rules={[{
+                            required: true,
+                            message: 'Please input your email!'
+                        }]}
                     >
                         <Input disabled />
                     </Form.Item>
@@ -220,21 +251,30 @@ export default function OnboardApplication() {
                     <Form.Item
                         name="ssn"
                         label="Social Security Number"
-                        rules={[{ required: true, message: 'Please input your SSN!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input your SSN!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name="dob"
                         label="Date of Birth"
-                        rules={[{ required: true, message: 'Please input your date of birth!' }]}
+                        rules={[{
+                            required: true,
+                            message: 'Please input your date of birth!'
+                        }]}
                     >
                         <DatePicker disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name="gender"
                         label="Gender"
-                        rules={[{ required: true, message: 'Please select your gender!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please select your gender!'
+                        }]}
                     >
                         <Select placeholder="Select your gender" disabled={isFormDisabled}>
                             <Option value="Male">Male</Option>
@@ -324,7 +364,10 @@ export default function OnboardApplication() {
                                     <Form.Item
                                         name={['employmentDetails', 'visaTitle']}
                                         label="Specify your Visa Title"
-                                        rules={[{ required: true, message: 'Please specify your visa title!' }]}
+                                        rules={[{
+                                            required: true,
+                                            whitespace: true, message: 'Please specify your visa title!'
+                                        }]}
                                     >
                                         <Input disabled={isFormDisabled} />
                                     </Form.Item>
@@ -344,7 +387,10 @@ export default function OnboardApplication() {
                                     <Form.Item
                                         name={['employmentDetails', 'startDate']}
                                         label="Start Date"
-                                        rules={[{ required: true, message: 'Please select your start date!' }]}
+                                        rules={[{
+                                            required: true,
+                                            message: 'Please select your start date!'
+                                        }]}
                                     >
                                         <DatePicker disabled={isFormDisabled} />
                                     </Form.Item>
@@ -364,7 +410,10 @@ export default function OnboardApplication() {
                                     <Form.Item
                                         name={['employmentDetails', 'endDate']}
                                         label="End Date"
-                                        rules={[{ required: true, message: 'Please select your end date!' }]}
+                                        rules={[{
+                                            required: true,
+                                            message: 'Please select your end date!'
+                                        }]}
                                     >
                                         <DatePicker disabled={isFormDisabled} />
                                     </Form.Item>
@@ -379,35 +428,50 @@ export default function OnboardApplication() {
                     <Form.Item
                         name={['reference', 'firstName']}
                         label="First Name"
-                        rules={[{ required: true, message: 'Please input the first name!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input the first name!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name={['reference', 'lastName']}
                         label="Last Name"
-                        rules={[{ required: true, message: 'Please input the last name!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input the last name!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name={['reference', 'phone']}
                         label="Phone"
-                        rules={[{ required: true, message: 'Please input the phone number!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input the phone number!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name={['reference', 'email']}
                         label="Email"
-                        rules={[{ required: true, message: 'Please input the email address!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input the email address!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
                     <Form.Item
                         name={['reference', 'relationship']}
                         label="Relationship"
-                        rules={[{ required: true, message: 'Please input the relationship!' }]}
+                        rules={[{
+                            required: true,
+                            whitespace: true, message: 'Please input the relationship!'
+                        }]}
                     >
                         <Input disabled={isFormDisabled} />
                     </Form.Item>
@@ -425,7 +489,10 @@ export default function OnboardApplication() {
                                             {...restField}
                                             name={[name, 'firstName']}
                                             label="First Name"
-                                            rules={[{ required: true, message: 'First name is required' }]}
+                                            rules={[{
+                                                required: true,
+                                                whitespace: true, message: 'First name is required'
+                                            }]}
                                             className='mb-2'
                                         >
                                             <Input disabled={isFormDisabled} />
@@ -434,7 +501,10 @@ export default function OnboardApplication() {
                                             {...restField}
                                             name={[name, 'lastName']}
                                             label="Last Name"
-                                            rules={[{ required: true, message: 'Last name is required' }]}
+                                            rules={[{
+                                                required: true,
+                                                whitespace: true, message: 'Last name is required'
+                                            }]}
                                             className='mb-2'
                                         >
                                             <Input disabled={isFormDisabled} />
@@ -451,7 +521,10 @@ export default function OnboardApplication() {
                                             {...restField}
                                             name={[name, 'phone']}
                                             label="Phone"
-                                            rules={[{ required: true, message: 'Phone is required' }]}
+                                            rules={[{
+                                                required: true,
+                                                whitespace: true, message: 'Phone is required'
+                                            }]}
                                             className='mb-2'
                                         >
                                             <Input disabled={isFormDisabled} />
@@ -460,7 +533,10 @@ export default function OnboardApplication() {
                                             {...restField}
                                             name={[name, 'email']}
                                             label="Email"
-                                            rules={[{ required: true, message: 'Email is required' }]}
+                                            rules={[{
+                                                required: true,
+                                                whitespace: true, message: 'Email is required'
+                                            }]}
                                             className='mb-2'
                                         >
                                             <Input disabled={isFormDisabled} />
@@ -469,7 +545,10 @@ export default function OnboardApplication() {
                                             {...restField}
                                             name={[name, 'relationship']}
                                             label="Relationship"
-                                            rules={[{ required: true, message: 'Relationship is required' }]}
+                                            rules={[{
+                                                required: true,
+                                                whitespace: true, message: 'Relationship is required'
+                                            }]}
                                             className='mb-0'
                                         >
                                             <Input disabled={isFormDisabled} />
