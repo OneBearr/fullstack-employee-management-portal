@@ -2,6 +2,8 @@ import React from 'react'
 
 export default function EmployeeHome() {
   return (
-    <div id="content" className='flex items-center justify-center text-3xl font-bold'> Welcome to your Employee Home Page</div>
+    <div className='pt-80'>
+      <div className='w-full flex items-center justify-center text-3xl font-bold pt-500'> Welcome to your Employee Home Page</div>
+    </div>
   )
 }

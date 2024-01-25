@@ -10,6 +10,7 @@ import OnboardApplication from "../OnboardApplication/OnboardApplication";
 import { menuItemsUnapproved, menuItemsApproved } from './menuItems';
 import { fetchPersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
 import { fetchPersonalFiles } from '../../../redux/personalFiles/personalFilesSlice';
+import { fetchEmployeeVisaStatus } from '../../../redux/employeeVisaStatus/employeeVisaStatus';
 
 export default function EmployeeDashboard() {
     const navigate = useNavigate();
@@ -25,12 +26,16 @@ export default function EmployeeDashboard() {
         } else {
             dispatch(fetchPersonalInfo({ userID, token }));
             dispatch(fetchPersonalFiles({ userID, token }));
+            dispatch(fetchEmployeeVisaStatus({ userID, token }));
         }
     }, [token, userID, username]);
 
     useEffect(() => {
+        const path = location.pathname;
         setIsApproved(status === "approved");
-        if (isApproved) {
+        if (path.includes('/employee-dashboard/visa-status')) {
+            navigate("/employee-dashboard/visa-status");
+        }else if (isApproved) {
             navigate("/employee-dashboard/personal-info");
         } else {
             navigate("/employee-dashboard/onboarding");

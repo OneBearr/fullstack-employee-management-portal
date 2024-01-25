@@ -35,7 +35,7 @@ export const personalFilesSlice = createSlice({
                 state.loading = false;
             })
             .addCase(fetchPersonalFiles.rejected, (state, action) => {
-                state.error = action.error.message || 'Failed to fetch user token';
+                state.error = action.error.message || 'Failed to fetch user files';
                 state.loading = false;
             });
     },
