@@ -44,7 +44,6 @@ export const employeeVisaStatusSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchEmployeeVisaStatus.fulfilled, (state, action) => {
-                console.log('fetchEmployeeVisaStatus result:')
                 console.log(action.payload)
                 if (action.payload) {
                     state.visaStatus = action.payload;

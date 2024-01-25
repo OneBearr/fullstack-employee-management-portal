@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require("path");
 
 const connectDB = require('./db');
 const errorHandlerMiddleware = require('./middlewares/errorHandler');
@@ -27,7 +28,7 @@ connectDB();
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use('/public', express.static('public'));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', authRouter);
 app.use('/api/applications', applicationRouter);

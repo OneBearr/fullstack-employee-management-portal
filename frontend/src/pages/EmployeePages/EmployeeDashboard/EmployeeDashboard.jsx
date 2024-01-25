@@ -33,9 +33,9 @@ export default function EmployeeDashboard() {
     useEffect(() => {
         const path = location.pathname;
         setIsApproved(status === "approved");
-        if (path.includes('/employee-dashboard/visa-status')) {
+        if (path === '/employee-dashboard/visa-status') {
             navigate("/employee-dashboard/visa-status");
-        }else if (isApproved) {
+        } else if (isApproved) {
             navigate("/employee-dashboard/personal-info");
         } else {
             navigate("/employee-dashboard/onboarding");
