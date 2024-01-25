@@ -7,7 +7,6 @@ export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { username } = useSelector((state) => state.user.info);
-  console.log('Logged in user is:' + username)
 
   const handleLogout = () => {
     dispatch(logoutUser());
