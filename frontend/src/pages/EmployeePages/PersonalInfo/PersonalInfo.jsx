@@ -333,7 +333,7 @@ export default function PersonalInfo() {
             label="Date of Birth: "
             rules={[{
               required: true,
-              whitespace: true, message: 'Please input your date of birth!'
+              message: 'Please input your date of birth!'
             }]}
           >
             {isEditing ? (
@@ -467,7 +467,7 @@ export default function PersonalInfo() {
                     label="Start Date"
                     rules={[{
                       required: true,
-                      whitespace: true, message: 'Please select your start date!'
+                      message: 'Please select your start date!'
                     }]}
                   >
                     {isEditing ? (
@@ -496,7 +496,7 @@ export default function PersonalInfo() {
                     label="End Date"
                     rules={[{
                       required: true,
-                      whitespace: true, message: 'Please select your end date!'
+                      message: 'Please select your end date!'
                     }]}
                   >
                     {isEditing ? (
