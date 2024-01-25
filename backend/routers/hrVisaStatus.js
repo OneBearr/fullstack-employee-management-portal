@@ -1,7 +1,9 @@
 const express = require('express');
 const {
     getVisaStatusByUID,
-    getAllVisaStatus
+    getAllVisaStatus,
+    approveVisaStatus,
+    rejectVisaStatus
 } = require('../controllers/visaStatus');
 const { authenticate, isHR } = require('../middlewares/auth')
 const router = express.Router();
@@ -10,5 +12,7 @@ const router = express.Router();
 router.get('/', authenticate, isHR, getAllVisaStatus);
 router.get('/:uid', authenticate, isHR, getVisaStatusByUID);
 
+router.put('/reject/:uid', authenticate, isHR, rejectVisaStatus);
+router.put('/approve/:uid', authenticate, isHR, approveVisaStatus);
 
 module.exports = router;
