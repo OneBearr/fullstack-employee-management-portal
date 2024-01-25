@@ -18,6 +18,8 @@ export default function VisaStatusMgnt() {
   const optEADFile = visaStatus.optEAD.file ? files.find(file => file._id === visaStatus.optEAD.file) : {};
   const I983File = visaStatus.I983.file ? files.find(file => file._id === visaStatus.I983.file) : {};
   const I20File = visaStatus.I20.file ? files.find(file => file._id === visaStatus.I20.file) : {};
+  const emptyI983URL = 'http://localhost:3000/public/I983_empty.pdf';
+  const sampleI983URL = 'http://localhost:3000/public/I983_sample.pdf';
 
 
   const handleFileDownload = async (accessURL) => {
@@ -149,14 +151,14 @@ export default function VisaStatusMgnt() {
             </Form.Item>
           }
           {/* Upload next document: I983 */}
-          {(visaStatus.I983.file && visaStatus.optEAD.status === "approved") &&
+          {(!visaStatus.I983.file && visaStatus.optEAD.status === "approved") &&
             <Form.Item
               label={<span className='font-bold'>I983: </span>}
             >
               <div>
                 <div className='flex justify-around'>
-                  <u>Download I983 Empty Template</u>
-                  <u>Download I983 Sample Template</u>
+                  <u onClick={() => handleFileDownload(emptyI983URL)}>Download I983 Empty Template</u>
+                  <u onClick={() => handleFileDownload(sampleI983URL)}>Download I983 Sample Template</u>
                 </div>
                 <div className='flex justify-around mt-5'>
                 <Upload
