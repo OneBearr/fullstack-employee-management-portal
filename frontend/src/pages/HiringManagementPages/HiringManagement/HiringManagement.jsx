@@ -3,8 +3,17 @@ import ErrorPage from "../../ErrorPage/ErrorPage";
 import { Tabs, List, Input, Button, Table, Tag } from "antd";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useForm, Controller } from "react-hook-form"
 
 function Registration() {
+  const { token } = useSelector((state) => state.user.info);
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      email: "",
+    },
+  })
+
   const columns = [
     {
       title: "Name",
@@ -45,6 +54,23 @@ function Registration() {
   
   const [data, setData] = useState([]);
 
+  const onSubmit = ({email}) => {
+    fetch("http://localhost:3000/auth/request-register", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        "x-auth-token": token,
+      },
+      body: JSON.stringify({
+        email: email
+      }),
+    })
+    .then((res)=>res.json())
+    .then((data)=>{
+      console.log(data);
+    })
+  };
+
   useEffect(()=>{
     fetch("http://localhost:3000/api/registrations/")
     .then((res)=>res.json())
@@ -63,9 +89,15 @@ function Registration() {
 
   return (
     <>
-      <div className="flex gap-4 mt-4 mb-4">
-        <Input placeholder="Please input email"></Input>
-        <Button type="primary">Generate token and send email</Button>
+      <div>
+        <form className="flex gap-4 mt-4 mb-4">
+            <Controller
+            name="email"
+            control={control}
+            render={({ field }) => <Input placeholder="Please input email" {...field} />}
+          />
+          <Button type="primary" onClick={handleSubmit(onSubmit)}>Generate token and send email</Button>
+        </form>
       </div>
       <p>History</p>
       <Table className="max-w-full" columns={columns} dataSource={data}></Table>
