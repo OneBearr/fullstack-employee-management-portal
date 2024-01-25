@@ -27,6 +27,7 @@ connectDB();
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use('/public', express.static('public'));
 
 app.use('/auth', authRouter);
 app.use('/api/applications', applicationRouter);
