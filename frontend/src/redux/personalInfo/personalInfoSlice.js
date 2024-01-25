@@ -85,11 +85,15 @@ export const personalInfoSlice = createSlice({
     name: 'personalInfo',
     initialState,
     reducers: {
+        clearInfoError: (state) => {
+            state.error = null;
+        },
     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchPersonalInfo.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(fetchPersonalInfo.fulfilled, (state, action) => {
                 if (action.payload) {
@@ -111,6 +115,7 @@ export const personalInfoSlice = createSlice({
             })
             .addCase(submitPersonalInfo.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(submitPersonalInfo.rejected, (state, action) => {
                 state.loading = false;
@@ -124,6 +129,7 @@ export const personalInfoSlice = createSlice({
             })
             .addCase(updatePersonalInfo.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(updatePersonalInfo.rejected, (state, action) => {
                 state.loading = false;
@@ -132,4 +138,5 @@ export const personalInfoSlice = createSlice({
     },
 });
 
+export const { clearInfoError } = personalInfoSlice.actions;
 export default personalInfoSlice.reducer;

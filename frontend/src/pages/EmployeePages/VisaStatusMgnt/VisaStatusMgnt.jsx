@@ -11,7 +11,7 @@ export default function VisaStatusMgnt() {
   const { token } = useSelector((state) => state.user.info);
   const { status: applicationStatus } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
   const { files } = useSelector((state) => state.personalFiles);
-  const { visaStatus } = useSelector((state) => state.employeeVisaStatus);
+  const { visaStatus, loading } = useSelector((state) => state.employeeVisaStatus);
   const [fileList, setFileList] = useState([]);
 
   const optReceiptFile = visaStatus.optReceipt.file ? files.find(file => file._id === visaStatus.optReceipt.file) : {};
@@ -45,10 +45,13 @@ export default function VisaStatusMgnt() {
     setFileList([]);
   };
 
+  if (loading) {
+    return <div className='flex justify-center pt-80'>Loading...</div>;
+  }
   return (
-    <div id="content"  className="pt-2">
+    <div id="content" className="pt-2">
       <div className='flex justify-center text-3xl font-bold'> Visa Status Page</div><br />
-      
+
       {/* Uploaded Documents */}
       <div className='flex justify-center text-xl font-bold'>Uploaded Documents:</div><br />
       <div className='w-full flex justify-center'>
@@ -161,7 +164,7 @@ export default function VisaStatusMgnt() {
                   <u onClick={() => handleFileDownload(sampleI983URL)}>Download I983 Sample Template</u>
                 </div>
                 <div className='flex justify-around mt-5'>
-                <Upload
+                  <Upload
                     beforeUpload={() => false}
                     onChange={({ fileList }) => setFileList(fileList)}
                     fileList={fileList}

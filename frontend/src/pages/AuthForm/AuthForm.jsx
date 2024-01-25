@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchUserInfo } from '../../redux/user/userSlice';
 import { registerUser } from '../../services/register';
+import { clearUserError } from "../../redux/user/userSlice";
 
 const AuthForm = (props) => {
     const { type } = props;
@@ -18,20 +19,27 @@ const AuthForm = (props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { isHR } = useSelector((state) => state.user.info);
+    const { error, loading } = useSelector((state) => state.user);
 
     useEffect(() => {
         if (type === "register" && !isJWT(token)) {
             navigate("/");
         }
-    }, [type, token, navigate]);
+    }, [type, token]);
+
+    useEffect(() => {
+        if (error) {
+            navigate("/error");
+        }
+    }, [error]);
 
     function isJWT(token) {
         if (!token) {
             return false;
         }
         const parts = token.split('.');
-        return parts.length === 3 && 
-               parts.every(part => part.length > 0);
+        return parts.length === 3 &&
+            parts.every(part => part.length > 0);
     }
 
     const onFinish = async (values) => {
@@ -44,10 +52,13 @@ const AuthForm = (props) => {
         if (type === 'login') {
             try {
                 await dispatch(fetchUserInfo({ username, password })).unwrap();
+                message.success('Logged in successfully!');
                 if (!isHR) navigate("/employee-dashboard");
                 // else go to HR dashboard
             } catch (error) {
-                alert(error.message);
+                console.error(error.message)
+                message.error(`Login failed`);
+                dispatch(clearUserError());
             }
         } else if (type === "register") {
             const { email } = values;
@@ -56,11 +67,17 @@ const AuthForm = (props) => {
                 message.success('Employee created successfully, redirecting to the login page.');
                 navigate("/login");
             } catch (error) {
-                alert(error.message);
+                console.error(error.message)
+                message.error(`Register failed`);
+                dispatch(clearUserError());
             }
         }
         form.resetFields();     // reset form inputs
     };
+
+    if (loading) {
+        return <div id="content" className='flex justify-center pt-80'>Talking to the server, hold on tight...</div>;
+    }
     return (
         <div id="content" className="flex items-center justify-center w-full">
             <Form
@@ -100,7 +117,7 @@ const AuthForm = (props) => {
                                 required: true,
                                 whitespace: true,
                                 type: 'email',
-                                message: "Please input a valid email!", 
+                                message: "Please input a valid email!",
                             },
                         ]}
                     >

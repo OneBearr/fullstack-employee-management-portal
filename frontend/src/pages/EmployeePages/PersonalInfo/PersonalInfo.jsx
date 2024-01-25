@@ -122,7 +122,7 @@ export default function PersonalInfo() {
   }, [info]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className='flex justify-center pt-80'>Loading...</div>;
   }
 
   return (
