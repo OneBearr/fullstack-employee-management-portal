@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Input, Button, Modal, DatePicker, Select, Avatar, message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { updatePersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
 import { downloadPersonalFileAPI, previewPersonalFileAPI } from '../../../services/personalFiles';
+import { hr_fetchPersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
+import { hr_fetchPersonalFiles } from '../../../redux/personalFiles/personalFilesSlice';
 const { Option } = Select;
 
 export default function PersonalInfo() {
@@ -18,6 +20,7 @@ export default function PersonalInfo() {
   let { info, loading } = useSelector((state) => state.personalInfo ?? {});
   // if you are HR, try to get the 'files' and 'info' of the employee by using your HR APIs 
   // may need before render or re-render the Form
+  let { id } = useParams();
 
   useEffect(() => {
     // if no user in the store, redirect to the welcome home page
@@ -27,6 +30,10 @@ export default function PersonalInfo() {
       } else if (!info.firstName) {   // if no submission yet, redirect to the onboarding page
         navigate("/employee-dashboard/onboarding", { replace: true });
       }
+    }
+    else{
+      dispatch(hr_fetchPersonalInfo({userID: id, token}));
+      dispatch(hr_fetchPersonalFiles({userID: id, token}));
     }
   }, [info.firstName, userID, isHR]);
 
@@ -76,18 +83,14 @@ export default function PersonalInfo() {
     console.log(personalInfoData);
   };
 
-  const handleFileDownload = async (accessURL) => {
-    if (!isHR) {
+  const handleFileDownload = async (file) => {
+      const accessURL = isHR ? file.hrAccess : file.access;
       await downloadPersonalFileAPI(accessURL, token);  // employee token here!
-    }
-    // if you are HR, try to use your HR api to handle the download
   }
 
-  const handleFilePreview = async (accessURL) => {
-    if (!isHR) {
+  const handleFilePreview = async (file) => {
+      const accessURL = isHR ? file.hrAccess : file.access;
       await previewPersonalFileAPI(accessURL, token);   // employee token here!
-    }
-    // if you are HR, try to use your HR api to handle the preview
   }
 
   const initialValues = useMemo(() => {
@@ -634,8 +637,8 @@ export default function PersonalInfo() {
             >
               <div className='flex justify-between'>
                 <span>{file.originalFileName}</span>
-                <u onClick={() => handleFilePreview(file.access)}>preview</u>
-                <u onClick={() => handleFileDownload(file.access)}>download</u>
+                <u onClick={() => handleFilePreview(file)}>preview</u>
+                <u onClick={() => handleFileDownload(file)}>download</u>
               </div>
             </Form.Item>
           ))}

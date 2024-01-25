@@ -9,9 +9,11 @@ function DebounceSearch() {
   const [options, setOptions] = useState([]);
   const fetchRef = useRef(0);
   const { token } = useSelector((state) => state.user.info);
+  const navigate = useNavigate();
 
   const onSelect = (value) =>{
     console.log(value);
+    navigate(`/hr-dashboard/employee-profile/${value}`);
   }
 
   const debounceFetcher = useMemo(() => {
@@ -85,7 +87,6 @@ export default function EmployeeProfiles() {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (text) => <a>{text}</a>,
     },
     {
       title: "SSN",
@@ -120,7 +121,7 @@ export default function EmployeeProfiles() {
         setEmployees(
           data.map((item) => {
             return {
-              id: item._id,
+              id: item.user,
               name: `( ${item.preferredName} ) ${item.firstName} ${item.middleName} ${item.lastName}`,
               ssn: item.ssn,
               cellPhoneNumber: item.cellPhoneNumber,
@@ -143,7 +144,7 @@ export default function EmployeeProfiles() {
         onRow={(record) => {
           return {
             onClick: () => {
-              navigate(`/hr-dashboard/employ-profile/${record.user}`);
+              navigate(`/hr-dashboard/employee-profile/${record.id}`);
             },
           };
         }}
