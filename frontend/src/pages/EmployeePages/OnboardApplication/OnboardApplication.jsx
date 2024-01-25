@@ -47,7 +47,7 @@ export default function OnboardApplication() {
         if (status === "rejected") {
             personalInfoData.onboardingInfo = info.onboardingInfo;
             try {
-                await dispatch(updatePersonalInfo({ personalInfoData, userID, token }));
+                await dispatch(updatePersonalInfo({ personalInfoData, userID, token })).unwrap();
                 if (trimmedValues.optReceipt[0]) {
                     await submitOptReceiptAPI(trimmedValues.optReceipt[0].originFileObj, token, 'optReceipt');
                 }
@@ -57,7 +57,7 @@ export default function OnboardApplication() {
             }
         } else {
             try {
-                await dispatch(submitPersonalInfo({ personalInfoData, userID, token }));
+                await dispatch(submitPersonalInfo({ personalInfoData, userID, token })).unwrap();
                 await submitOptReceiptAPI(trimmedValues.optReceipt[0].originFileObj, token, 'optReceipt');
                 message.success('Onboarding application submitted successfully!');
             } catch (error) {

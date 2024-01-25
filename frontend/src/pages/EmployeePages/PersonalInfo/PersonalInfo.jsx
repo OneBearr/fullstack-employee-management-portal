@@ -82,7 +82,7 @@ export default function PersonalInfo() {
     };
 
     try {
-      await dispatch(updatePersonalInfo({ personalInfoData, userID, token }));
+      await dispatch(updatePersonalInfo({ personalInfoData, userID, token })).unwrap();
       message.success('Information updated successfully!');
     } catch (error) {
       message.error(`Information update failed: ${error.message}`);
