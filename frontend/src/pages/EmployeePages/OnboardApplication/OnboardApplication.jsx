@@ -110,10 +110,10 @@ export default function OnboardApplication() {
         return <div>Loading...</div>;
     }
     return (
-        <div id="content" className='w-full flex-col p-5'>
+        <div id="content" className='w-full flex-col pt-2'>
             <div className='flex justify-center text-3xl font-bold mb-5'>Onboarding Application Page</div>
             <div className='flex justify-center text-xl font-bold mb-5'>Current Status: {status ? status : "Never submitted"}</div>
-            {status === "rejected" && <div className='flex justify-center text-xl font-bold mb-5'>Reason: {feedback}</div>}
+            {status === "rejected" && <div className='flex justify-center text-xl font-bold mb-5'>Feedback: {feedback}</div>}
             {status === "pending" && <div className='flex justify-center text-xl font-bold mb-5'>Please wait for HR to review your application</div>}
             <div className='w-full flex justify-center'>
                 <Form
@@ -299,7 +299,7 @@ export default function OnboardApplication() {
                         noStyle
                     >
                         {({ getFieldValue }) => {
-                            if (getFieldValue(['workAuth', 'isCitizen']) === 'no' && getFieldValue(['workAuth', 'workAuthType']) === 'F1CPTOPT') {
+                            if (getFieldValue(['workAuth', 'isCitizen']) === 'no' && getFieldValue(['workAuth', 'workAuthType']) === 'F1CPTOPT' && !isFormDisabled) {
                                 return (
                                     <Form.Item
                                         name="optReceipt"
@@ -311,9 +311,9 @@ export default function OnboardApplication() {
                                             }
                                             return e && e.fileList;
                                         }}
-                                        rules={[{ required: !(files.some(file => file.fileType === 'optReceipt')), message: 'Please upload you OPT receipt!' }]}
+                                        rules={[{ required: !(files.some(file => file.fileType === 'optReceipt')), message: 'Please upload your OPT receipt!' }]}
                                     >
-                                        <Upload beforeUpload={() => false} listType="text " maxCount={1} disabled={isFormDisabled}>
+                                        <Upload beforeUpload={() => false} listType="text " maxCount={1}>
                                             <Button icon={<UploadOutlined />}>Click to upload</Button>
                                         </Upload>
                                     </Form.Item>
@@ -494,8 +494,6 @@ export default function OnboardApplication() {
                     {files.map((file, index) => (
                         <Form.Item
                             key={index}
-                            label={`${file.fileType}: `}
-                            name={`fileName${index}`}
                         >
                             <div className='flex justify-between'>
                                 <span>{file.originalFileName}</span>

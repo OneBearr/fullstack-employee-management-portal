@@ -122,10 +122,10 @@ export default function PersonalInfo() {
   }
 
   return (
-    <div id="content">
+    <div id="content" className="pt-2">
       <div className='flex justify-center text-3xl font-bold mb-5'>Personal Information Page</div>
-      <div className="flex justify-end">
-        {isHR && (isEditing ? (
+      <div className="flex justify-end pr-20 mr-20">
+        {!isHR && (isEditing ? (
           <div>
             <Button onClick={handleSave} type="primary" >
               Save
@@ -136,7 +136,7 @@ export default function PersonalInfo() {
           <Button onClick={handleEdit}>Edit</Button>
         ))}
       </div>
-      <div className='w-full flex justify-center'>
+      <div className='w-full flex justify-center ml-5'>
         <Form
           name="onboardingForm"
           className="w-1/2"
@@ -631,8 +631,6 @@ export default function PersonalInfo() {
           {files.map((file, index) => (
             <Form.Item
               key={index}
-              label={`${file.fileType}: `}
-              name={`fileName${index}`}
             >
               <div className='flex justify-between'>
                 <span>{file.originalFileName}</span>
