@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { submitPersonalInfoAPI, getPersonalInfoAPI, updatePersonalInfoAPI } from '../../services/personalInfo';
+import { hr_GetPersonalInfoAPI } from '../../services/hr';
 
 export const fetchPersonalInfo = createAsyncThunk(
     'personalInfo/fetchPersonalInfo',
@@ -8,6 +9,14 @@ export const fetchPersonalInfo = createAsyncThunk(
         return responseData
     }
 );
+
+export const hr_fetchPersonalInfo = createAsyncThunk(
+    'personalInfo/hr_fetchPersonalInfo',
+    async ({ userID, token }) => {
+        const responseData = await hr_GetPersonalInfoAPI(userID, token);
+        return responseData
+    }
+)
 
 export const submitPersonalInfo = createAsyncThunk(
     'personalInfo/submitPersonalInfo',
@@ -134,6 +143,21 @@ export const personalInfoSlice = createSlice({
             .addCase(updatePersonalInfo.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
+            })
+            .addCase(hr_fetchPersonalInfo.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(hr_fetchPersonalInfo.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.info = action.payload;
+                } else {
+                    state.info = initialState.info;
+                }
+                state.loading = false;
+            })
+            .addCase(hr_fetchPersonalInfo.rejected, (state, action) => {
+                state.error = action.error.message;
+                state.loading = false;
             })
     },
 });

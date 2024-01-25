@@ -2,11 +2,32 @@ const APIError = require('../errors')
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('../models/user');
 const VisaStatus = require('../models/visaStatus');
+const File = require('../models/file');
+const Application = require('../models/personalInformation');
 
 const getAllVisaStatus = async (req, res, next) => {
     try {
         const visaStatus = await VisaStatus.find();
-        res.status(200).json(visaStatus);
+        const results = [];
+        for (const item of visaStatus) {
+            const user = await Application.findOne({user: item.user});
+            const files = await File.find({ user: item.user });
+
+            const obj = {};
+            obj.optReceipt = item.optReceipt;
+            obj.optEAD = item.optEAD;
+            obj.I983 = item.I983;
+            obj.I20 = item.I20;
+            obj.user = item.user;
+            obj.feedback = item.feedback;
+            obj.onboardingInfo = user.onboardingInfo;
+            obj.employmentDetails = user.employmentDetails;
+            obj.name = `${user.firstName} ${user.middleName} ${user.lastName}`;
+            obj.files = files;
+
+            results.push(obj);
+        }
+        res.status(200).json(results);
         return;
     } catch (error) {
         console.error(error.message);

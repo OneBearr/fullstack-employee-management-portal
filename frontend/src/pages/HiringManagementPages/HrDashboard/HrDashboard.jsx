@@ -4,7 +4,7 @@ import ErrorPage from "../../ErrorPage/ErrorPage";
 import HiringManagement from "../HiringManagement/HiringManagement";
 import HrVisaStatusManagement from "../HrVisaStatusManagement/HrVisaStatusManagement";
 import EmployeeProfiles from "../EmployeeProfiles/EmployeeProfiles";
-import Profile from "../Profile/Profile";
+import PersonalInfo from "../../EmployeePages/PersonalInfo/PersonalInfo";
 import DocumentReview from "../DocumentReview/DocumentReview";
 import { Link } from "react-router-dom";
 
@@ -80,7 +80,8 @@ export default function HrDashboard() {
           element={<HrVisaStatusManagement />}
         />
         <Route path="/hiring-management" element={<HiringManagement />} />
-        <Route path="/employ-profile/:id" element={<Profile></Profile>}></Route>
+        <Route path="/employee-profile/:id" element={<PersonalInfo></PersonalInfo>}></Route>
+        <Route path="/application/:id" element={<PersonalInfo></PersonalInfo>}></Route>
         <Route path="/document-review/:id" element={<DocumentReview></DocumentReview>}></Route>
         <Route path="*" element={<ErrorPage />} />
       </Routes>
