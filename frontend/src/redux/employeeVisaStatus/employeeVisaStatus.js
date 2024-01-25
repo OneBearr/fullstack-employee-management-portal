@@ -13,7 +13,7 @@ const initialState = {
     visaStatus: {
         optReceipt: {
             status: 'no submit',
-            file: null, 
+            file: null,
         },
         optEAD: {
             status: 'no submit',
@@ -36,7 +36,11 @@ const initialState = {
 export const employeeVisaStatusSlice = createSlice({
     name: 'employeeVisaStatus',
     initialState,
-    reducers: {},
+    reducers: {
+        clearVisaStatusError: (state) => {
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchEmployeeVisaStatus.pending, (state) => {
@@ -59,4 +63,5 @@ export const employeeVisaStatusSlice = createSlice({
     },
 });
 
+export const { clearVisaStatusError } = employeeVisaStatusSlice.actions;
 export default employeeVisaStatusSlice.reducer;

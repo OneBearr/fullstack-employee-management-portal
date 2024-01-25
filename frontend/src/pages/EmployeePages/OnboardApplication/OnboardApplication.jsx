@@ -23,7 +23,7 @@ export default function OnboardApplication() {
         if (status === 'approved') {
             navigate("/employee-dashboard/personal-info", { replace: true });
         }
-    }, [status, navigate]);
+    }, [status]);
 
     const onFinish = async (values) => {
         if (values.emergencyContacts.length < 1) {
@@ -111,7 +111,7 @@ export default function OnboardApplication() {
     }, [registerEmail, status, info]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className='flex justify-center pt-80'>Loading...</div>;
     }
     return (
         <div id="content" className='w-full flex-col pt-2'>

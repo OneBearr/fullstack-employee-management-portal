@@ -4,7 +4,7 @@ import { hr_GetPersonalFilesAPI } from '../../services/hr';
 
 export const fetchPersonalFiles = createAsyncThunk(
     'personalFiles/fetchPersonalFiles',
-    async ({userID, token}) => {
+    async ({ userID, token }) => {
         const responseData = await fetchPersonalFilesAPI(userID, token);
         return responseData;
     }
@@ -27,7 +27,11 @@ const initialState = {
 export const personalFilesSlice = createSlice({
     name: 'personalFiles',
     initialState,
-    reducers: {},
+    reducers: {
+        clearFilesError: (state) => {
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchPersonalFiles.pending, (state) => {
@@ -67,4 +71,5 @@ export const personalFilesSlice = createSlice({
     },
 });
 
+export const { clearFilesError } = personalFilesSlice.actions;
 export default personalFilesSlice.reducer;

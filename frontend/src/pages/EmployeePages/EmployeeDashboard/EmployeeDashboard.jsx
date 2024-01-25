@@ -11,6 +11,10 @@ import { menuItemsUnapproved, menuItemsApproved } from './menuItems';
 import { fetchPersonalInfo } from '../../../redux/personalInfo/personalInfoSlice';
 import { fetchPersonalFiles } from '../../../redux/personalFiles/personalFilesSlice';
 import { fetchEmployeeVisaStatus } from '../../../redux/employeeVisaStatus/employeeVisaStatus';
+import { clearUserError } from "../../../redux/user/userSlice";
+import { clearInfoError } from "../../../redux/personalInfo/personalInfoSlice";
+import { clearFilesError } from "../../../redux/personalFiles/personalFilesSlice";
+import { clearVisaStatusError } from "../../../redux/employeeVisaStatus/employeeVisaStatus";
 
 export default function EmployeeDashboard() {
     const navigate = useNavigate();
@@ -18,6 +22,10 @@ export default function EmployeeDashboard() {
     const { username, userID, token } = useSelector((state) => state.user.info);
     const { status } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
     const [isApproved, setIsApproved] = useState(false);
+    const { error: userEroor } = useSelector((state) => state.user);
+    const { loading, error: infoError } = useSelector((state) => state.personalInfo);
+    const { error: filesError } = useSelector((state) => state.personalFiles);
+    const { error: visaStatusError } = useSelector((state) => state.employeeVisaStatus);
 
     useEffect(() => {
         // if no user in the store, redirect to the welcome home page
@@ -42,6 +50,19 @@ export default function EmployeeDashboard() {
         }
     }, [isApproved, status]);
 
+    useEffect(() => {
+        if (userEroor || infoError || filesError || visaStatusError) {
+            navigate("/error");
+            dispatch(clearUserError());
+            dispatch(clearInfoError());
+            dispatch(clearFilesError());
+            dispatch(clearVisaStatusError());
+        }
+    }, [filesError, infoError, userEroor, visaStatusError]);
+
+    if (loading) {
+        return <div id="content" className='flex justify-center pt-80'>Loading, hold on tight...</div>;
+    }
     return (
         <div id='content' className='w-1/2'>
             <NavMenu
