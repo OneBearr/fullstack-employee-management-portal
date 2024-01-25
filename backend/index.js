@@ -12,14 +12,14 @@ const userRouter = require('./routers/user');
 const applicationRouter = require('./routers/application');
 const uploadRouter = require('./routers/upload');
 const downloadRouter = require('./routers/download');
+const fileRouter = require('./routers/file');
+const visaStatusRouter = require('./routers/visaStatus');
+
+const hrVisaStatusRouter = require('./routers/hrVisaStatus');
 const hrDownloadRouter = require('./routers/hrDownload');
 const hrApplicationRouter = require('./routers/hrApplication')
 const hrFileRouter = require('./routers/hrFile');
-const fileRouter = require('./routers/file');
-
-const visaStatusRouter = require('./routers/visaStatus');
-const hrVisaStatusRouter = require('./routers/hrVisaStatus');
-
+const notificationRouter = require('./routers/notification');
 const regRouter = require('./routers/registration');
 
 
@@ -42,6 +42,7 @@ app.use('/api/hrDownload', hrDownloadRouter);
 app.use('/api/hrApplications', hrApplicationRouter);
 app.use('/api/hrFiles', hrFileRouter);
 app.use('/api/hrVisaStatus', hrVisaStatusRouter);
+app.use('/api/notification', notificationRouter);
 app.use('/api/registrations', regRouter);
 
 

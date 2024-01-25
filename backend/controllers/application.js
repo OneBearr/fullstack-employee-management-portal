@@ -14,6 +14,23 @@ const getAllApplication = async (req, res, next) => {
     }
 };
 
+const searchApplication = async (req, res, next) => {
+    let searchName = req.params?.name;
+
+    try {
+        const applications = await PersonalInformation.find();
+        return res.status(200).json(applications.map((item)=>{
+            const name = `( ${item.preferredName} ) ${item.firstName} ${item.middleName} ${item.lastName}`;
+            if(name.toLowerCase().includes(searchName.toLowerCase())){
+                return item;
+            }
+        }));
+    } catch (err) {
+        console.error(err.message);
+        return next(new APIError(err.message, 500));
+    }
+};
+
 // find application(personalInformation) by uid
 const getOneApplication = async (req, res, next) => {
     let uid = req.params?.uid;
@@ -189,5 +206,6 @@ module.exports = {
     createApplication,
     updateApplication,
     rejectApplication,
-    approveApplication
+    approveApplication,
+    searchApplication
 }

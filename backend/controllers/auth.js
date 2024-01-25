@@ -1,20 +1,13 @@
 const APIError = require('../errors');
 const jwt = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
 const path = require("path");
 const envPath = path.join(__dirname, "../.env");
 const User = require('../models/user');
 const RegistrationToken = require('../models/registrationToken');
+const transporter = require('../transporter');
 
 require('dotenv').config({ path: envPath });
 // configure the reset password invitation email
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS
-    }
-});
 
 function generateToken(email) {
     return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });

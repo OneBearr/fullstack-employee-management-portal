@@ -1,30 +1,76 @@
-import { useEffect, useState, useMemo } from "react";
-import { Table, Select, Empty } from "antd";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { Table, Select, Empty, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
+import { useSelector } from "react-redux";
 
-function DebounceSearch(props) {
-  const data = props.data.map((item)=>{
-    return {
-      label: `${item.name}`,
-      value: `${item.id}`,
-    }
-  });
+function DebounceSearch() {
+  const [fetching, setFetching] = useState(false);
+  const [options, setOptions] = useState([]);
+  const fetchRef = useRef(0);
+  const { token } = useSelector((state) => state.user.info);
 
   const onSelect = (value) =>{
     console.log(value);
   }
 
-  const filterOption = (input, option) => (option.label.includes(input));
+  const debounceFetcher = useMemo(() => {
+    const loadOptions = (value) => {
+      if(!value || !value.trim()){
+        setFetching(false);
+        setOptions([]);
+        return;
+      }
+      fetchRef.current += 1;
+      const fetchId = fetchRef.current;
+      setOptions([]);
+      setFetching(true);
+      searchUserList(value).then((newOptions) => {
+        if (fetchId !== fetchRef.current) {
+          // for fetch callback order
+          return;
+        }
+        if(newOptions == false){
+          setOptions([]);
+        }
+        else{
+          setOptions(newOptions);
+        }
+        setFetching(false);
+      });
+    };
+    return debounce(loadOptions, 1000);
+  }, []);
+
+  async function searchUserList(username) {
+    console.log('fetching user', username);
+    return fetch(`http://localhost:3000/api/hrApplications/search/${username}`,{
+      headers: {
+        "x-auth-token": token,
+      }
+    })
+      .then((response) => response.json())
+      .then((body) =>
+        body.map((user) => {
+          if(user){
+            return {
+              label: `( ${user.preferredName} ) ${user.firstName} ${user.middleName} ${user.lastName}`,
+              value: user.user,
+          }
+        }}),
+      );
+  }
 
   return (
     <Select
+      className="w-full mt-4 mb-4"
       showSearch
-      placeholder="input search text"
-      filterOption={filterOption}
+      placeholder="input search name"
+      filterOption={false}
       onSelect={onSelect}
-      notFoundContent={<Empty/>}
-      options={data}
+      onSearch={debounceFetcher}
+      notFoundContent={fetching ? <Spin size="small" /> :<Empty/>}
+      options={options}
     />
   );
 }
@@ -32,6 +78,7 @@ function DebounceSearch(props) {
 export default function EmployeeProfiles() {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
+  const { token } = useSelector((state) => state.user.info);
 
   const columns = [
     {
@@ -63,7 +110,11 @@ export default function EmployeeProfiles() {
   ];
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/applications/")
+    fetch("http://localhost:3000/api/hrApplications", {
+      headers: {
+        "x-auth-token": token,
+      }
+    })
       .then((res) => res.json())
       .then((data) => {
         setEmployees(
@@ -85,14 +136,14 @@ export default function EmployeeProfiles() {
 
   return (
     <>
-      <DebounceSearch data={employees}></DebounceSearch>
+      <DebounceSearch></DebounceSearch>
       <Table
         columns={columns}
         dataSource={employees}
         onRow={(record) => {
           return {
             onClick: () => {
-              navigate(`/hr-dashboard/employ-profile/${record.id}`);
+              navigate(`/hr-dashboard/employ-profile/${record.user}`);
             },
           };
         }}
