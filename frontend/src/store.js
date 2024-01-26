@@ -3,6 +3,7 @@ import userReducer from './redux/user/userSlice';
 import personalInfoReducer from './redux/personalInfo/personalInfoSlice';
 import personalFilesReducer from './redux/personalFiles/personalFilesSlice';
 import employeeVisaStatusReducer from './redux/employeeVisaStatus/employeeVisaStatus';
+import hrReducer from './redux/hr/hrSlice';
 
 const preloadedState = {
     user: JSON.parse(localStorage.getItem('user')) || {
@@ -25,7 +26,8 @@ export const store = configureStore({
         user: userReducer,
         personalInfo: personalInfoReducer,
         personalFiles: personalFilesReducer,
-        employeeVisaStatus: employeeVisaStatusReducer
+        employeeVisaStatus: employeeVisaStatusReducer,
+        hr: hrReducer
     },
     preloadedState
 });
