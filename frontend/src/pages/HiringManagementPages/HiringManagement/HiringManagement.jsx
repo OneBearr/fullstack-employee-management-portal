@@ -4,6 +4,7 @@ import { Tabs, List, Input, Button, Table, Tag } from "antd";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form"
+import moment from "moment";
 
 function Registration() {
   const { token } = useSelector((state) => state.user.info);
@@ -36,16 +37,21 @@ function Registration() {
     {
       title: "Status",
       key: "status",
-      render: (_, {status, exp}) => {
-        if(status){
-          return <Tag color="green">Submitted</Tag>
+      render: (_, {isUsed, submitted, exp}) => {
+        if(isUsed){
+          if(submitted){
+            return <Tag color="green">Application Submitted</Tag>
+          }
+          else{
+            return <Tag color="blue">Waiting for Application Submit</Tag>
+          }
         }
         else{
           if(Date.parse(exp) < Date.parse(Date.now())){
-            return <Tag color="yellow">Waiting</Tag>
+            return <Tag color="yellow">Waiting for Register</Tag>
           }
           else{
-            return <Tag color="red">Expired</Tag>
+            return <Tag color="red">Token Expired</Tag>
           }
         }
       }
@@ -80,8 +86,9 @@ function Registration() {
           name: item.name,
           email: item.email,
           link: item.link,
-          status: item.submitted,
-          exp: item.expiration
+          submitted: item.submitted,
+          exp: moment.utc(item.expiration),
+          isUsed: item.isUsed
         }
       }))
     })

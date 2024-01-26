@@ -41,7 +41,7 @@ function DebounceSearch() {
         setFetching(false);
       });
     };
-    return debounce(loadOptions, 1000);
+    return debounce(loadOptions, 800);
   }, []);
 
   async function searchUserList(username) {
@@ -56,7 +56,7 @@ function DebounceSearch() {
         body.map((user) => {
           if(user){
             return {
-              label: `( ${user.preferredName} ) ${user.firstName} ${user.middleName} ${user.lastName}`,
+              label: `( ${user.preferredName || ""} ) ${user.firstName} ${user.middleName || "" } ${user.lastName}`,
               value: user.user,
           }
         }}),
@@ -118,11 +118,12 @@ export default function EmployeeProfiles() {
     })
       .then((res) => res.json())
       .then((data) => {
+        const filteredData = data.filter((item)=>(item.onboardingInfo.status==="approved"));
         setEmployees(
-          data.map((item) => {
+          filteredData.map((item) => {
             return {
               id: item.user,
-              name: `( ${item.preferredName} ) ${item.firstName} ${item.middleName} ${item.lastName}`,
+              name: `${item.firstName} ${item.middleName || ""} ${item.lastName}`,
               ssn: item.ssn,
               cellPhoneNumber: item.cellPhoneNumber,
               email: item.email,
