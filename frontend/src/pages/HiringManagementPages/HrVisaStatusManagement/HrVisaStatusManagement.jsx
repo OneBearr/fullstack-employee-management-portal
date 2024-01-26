@@ -8,9 +8,21 @@ import moment from 'moment';
 import { downloadPersonalFileAPI } from '../../../services/personalFiles';
 const { Search } = Input;
 
-function InProgressEmployeeTable (props) {
+function InProgressEmployeeTable () {
     const { token } = useSelector((state) => state.user.info);
     const navigate = useNavigate();
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect (()=>{
+        hr_GetVisaStatusAPI(token)
+        .then((data)=>{
+            setData(data.filter((item)=>{
+                return !(item.optReceipt.status === "approved" && item.optEAD.status === "approved" && item.I983.status === "approved" && item.I20.status === "approved")
+            }));
+            setLoading(false);
+        })
+    },[]);
 
     const sendNotification = async (user, subject, text) => {
         await hr_SendNotification(user, subject, text, token);
@@ -170,13 +182,22 @@ function InProgressEmployeeTable (props) {
         },
     ];
 
-    return (<Table columns={columns} dataSource={props.data==false? [] : props.data}></Table>)
+    return (<Table loading={loading} columns={columns} dataSource={data}></Table>)
 }
 
-function AllEmployeeTable (props) {
-    const [searchText, setSearchText] = useState("");
+function AllEmployeeTable () {
     const { token } = useSelector((state) => state.user.info);
     const navigate = useNavigate();
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect (()=>{
+        hr_GetVisaStatusAPI(token)
+        .then((data)=>{
+            setData(data);
+            setLoading(false);
+        })
+    },[]);
 
     const handleFileDownload = async (file) => {
         await downloadPersonalFileAPI(file.hrAccess, token);
@@ -309,20 +330,40 @@ function AllEmployeeTable (props) {
             key: "Documents",
             render: ({files, optReceipt, optEAD, I983, I20, feedback})=>{
                 return (files.map((file, index)=>(
-                <div className='flex justify-between gap-4 border-2 border-rose-600 my-1' key= {index}>
-                    <span>{file.originalFileName}</span>
-                    <u onClick={() => handleFilePreview(file, optReceipt, optEAD, I983, I20, feedback)}>preview</u>
-                    <u onClick={() => handleFileDownload(file)}>download</u>
+                <div className='border-2 border-inherit rounded-lg my-1 p-1' key= {index}>
+                    <pre className="text-ellipsis">{file.originalFileName}</pre>
+                    <div className="flex gap-4">
+                        <u onClick={() => handleFilePreview(file, optReceipt, optEAD, I983, I20, feedback)}>preview</u>
+                        <u onClick={() => handleFileDownload(file)}>download</u>
+                    </div>
                   </div>
                 )))
             }
         },
     ];
 
+    const onSearch = (e) =>{
+        const searchText = e.target.value;
+        setLoading(true);
+        hr_GetVisaStatusAPI(token)
+        .then((data)=>{
+            if(!searchText || !searchText.trim()){
+                setData(data);
+                setLoading(false);
+                return;
+            }
+            const newData = data.filter((item)=>(item.name.toLowerCase().includes(searchText.toLowerCase())));
+            setData(newData);
+            setLoading(false);
+        })
+    }
+
     return (
     <>
-        <Search className="w-full mt-4 mb-4" placeholder="input search text" allowClear value={searchText} onChange={(e)=>{setSearchText(e.target.value)}}></Search>
-        <Table filter columns={columns} dataSource={props.data==false? [] : props.data}></Table>
+        <Search className="w-full mt-4 mb-4" placeholder="input search text" allowClear
+            onChange={onSearch}>
+        </Search>
+        <Table loading={loading} columns={columns} dataSource={data}></Table>
     </>
     )
 }
@@ -330,26 +371,12 @@ function AllEmployeeTable (props) {
 export default function HrVisaStatusManagement () {
     const location = useLocation();
     const type = location.state?.type || 'all';
-    const { token } = useSelector((state) => state.user.info);
-
-    const [inProcessList, setInProcessList] = useState([]);
-    const [allList, setAllList] = useState([]);
-
-    useEffect (()=>{
-        hr_GetVisaStatusAPI(token)
-        .then((data)=>{
-            setInProcessList(data.filter((item)=>{
-                return !(item.optReceipt.status === "approved" && item.optEAD.status === "approved" && item.I983.status === "approved" && item.I20.status === "approved")
-            }))
-            setAllList(data);
-        })
-    },[]);
 
     if(type === 'in-progress'){
-        return (<InProgressEmployeeTable data={inProcessList}></InProgressEmployeeTable>);
+        return (<InProgressEmployeeTable></InProgressEmployeeTable>);
     }
     else if(type === 'all'){
-        return (<AllEmployeeTable data={allList}></AllEmployeeTable>);
+        return (<AllEmployeeTable></AllEmployeeTable>);
     }
     else{
         return (<ErrorPage></ErrorPage>)

@@ -8,6 +8,7 @@ import moment from "moment";
 
 function Registration() {
   const { token } = useSelector((state) => state.user.info);
+  const [loading, setLoading] = useState(true);
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -47,7 +48,7 @@ function Registration() {
           }
         }
         else{
-          if(Date.parse(exp) < Date.parse(Date.now())){
+          if(Date.parse(new Date(exp)) > Date.now()){
             return <Tag color="yellow">Waiting for Register</Tag>
           }
           else{
@@ -91,6 +92,7 @@ function Registration() {
           isUsed: item.isUsed
         }
       }))
+      setLoading(false);
     })
   },[]);
 
@@ -107,7 +109,7 @@ function Registration() {
         </form>
       </div>
       <p>History</p>
-      <Table className="max-w-full" columns={columns} dataSource={data}></Table>
+      <Table loading={loading} className="max-w-full" columns={columns} dataSource={data}></Table>
     </>
   );
 }
@@ -136,7 +138,7 @@ function ReviewApplications() {
             <List.Item
               actions={[<Link key="list-view-application" to={`/hr-dashboard/application/${item.user}`} target="_blank">View Application</Link>]}
             >
-              <p>{item.firstName} {item.middleName} {item.lastName}</p>
+              <p>{item.firstName} {item.middleName || ""} {item.lastName}</p>
               <p>{item.email}</p>
             </List.Item>
           )}
@@ -153,7 +155,7 @@ function ReviewApplications() {
           dataSource={rejectedApplications}
           renderItem={(item) => (
             <List.Item>
-              <p>{item.firstName} {item.middleName} {item.lastName}</p>
+              <p>{item.firstName} {item.middleName || ""} {item.lastName}</p>
               <p>{item.email}</p>
             </List.Item>
           )}
@@ -170,7 +172,7 @@ function ReviewApplications() {
           dataSource={approvedApplications}
           renderItem={(item) => (
             <List.Item>
-              <p>{item.firstName} {item.middleName} {item.lastName}</p>
+              <p>{item.firstName} {item.middleName || ""} {item.lastName}</p>
               <p>{item.email}</p>
             </List.Item>
           )}
