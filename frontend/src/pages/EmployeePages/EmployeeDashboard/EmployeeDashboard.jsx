@@ -22,7 +22,7 @@ export default function EmployeeDashboard() {
     const { username, userID, token } = useSelector((state) => state.user.info);
     const { status } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
     const [isApproved, setIsApproved] = useState(false);
-    const { error: userEroor } = useSelector((state) => state.user);
+    const { error: userError } = useSelector((state) => state.user);
     const { loading, error: infoError } = useSelector((state) => state.personalInfo);
     const { error: filesError } = useSelector((state) => state.personalFiles);
     const { error: visaStatusError } = useSelector((state) => state.employeeVisaStatus);
@@ -51,17 +51,20 @@ export default function EmployeeDashboard() {
     }, [isApproved, status]);
 
     useEffect(() => {
-        if (userEroor || infoError || filesError || visaStatusError) {
+        if (userError || infoError || filesError || visaStatusError) {
             navigate("/error");
             dispatch(clearUserError());
             dispatch(clearInfoError());
             dispatch(clearFilesError());
             dispatch(clearVisaStatusError());
         }
-    }, [filesError, infoError, userEroor, visaStatusError]);
+    }, [filesError, infoError, userError, visaStatusError]);
 
     if (loading) {
         return <div id="content" className='flex justify-center pt-80'>Loading, hold on tight...</div>;
+    }
+    if (userError || infoError || filesError || visaStatusError) {
+        navigate("/error");
     }
     return (
         <div id='content' className='w-1/2'>
