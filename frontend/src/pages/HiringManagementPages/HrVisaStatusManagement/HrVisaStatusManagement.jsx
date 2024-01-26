@@ -1,11 +1,11 @@
 import { Input, Table, Tag, Button } from "antd";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ErrorPage from "../../ErrorPage/ErrorPage";
 import { hr_GetVisaStatusAPI, hr_SendNotification} from "../../../services/hr";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from 'moment';
-import { downloadPersonalFileAPI, previewPersonalFileAPI } from '../../../services/personalFiles';
+import { downloadPersonalFileAPI } from '../../../services/personalFiles';
 const { Search } = Input;
 
 function InProgressEmployeeTable (props) {
@@ -140,13 +140,43 @@ function InProgressEmployeeTable (props) {
 
 function AllEmployeeTable (props) {
     const { token } = useSelector((state) => state.user.info);
+    const navigate = useNavigate();
 
     const handleFileDownload = async (file) => {
         await downloadPersonalFileAPI(file.hrAccess, token);
     }
   
-    const handleFilePreview = async (file) => {
-        await previewPersonalFileAPI(file.hrAccess, token);
+    const handleFilePreview = async (file, optReceipt, optEAD, I983, I20, feedback) => {
+        let approved = true;
+        if(file._id === optReceipt.file){
+            if(optReceipt.status !== "approved"){
+                approved = false;
+            }
+        }
+        else if(file._id === optEAD.file){
+            if(optEAD.status !== "approved"){
+                approved = false;
+            }
+        }
+        else if(file._id === I983.file){
+            if(I983.status !== "approved"){
+                approved = false;
+            }
+        }
+        else if(file._id === I20.file){
+            if(I20.status !== "approved"){
+                approved = false;
+            }
+        }
+
+        navigate(`/hr-dashboard/document/${file.originalFileName}`, {
+            state:{
+                file: file,
+                approved: approved,
+                feedback: feedback
+            }
+        });
+        //await previewPersonalFileAPI(file.hrAccess, token);
     }
 
     const columns = [
@@ -234,12 +264,11 @@ function AllEmployeeTable (props) {
         {
             title: "Documents",
             key: "Documents",
-            dataIndex: "files",
-            render: (data)=>{
-                return (data.map((file, index)=>(
+            render: ({files, optReceipt, optEAD, I983, I20, feedback})=>{
+                return (files.map((file, index)=>(
                 <div className='flex justify-between gap-4' key= {index}>
                     <span>{file.originalFileName}</span>
-                    <u onClick={() => handleFilePreview(file)}>preview</u>
+                    <u onClick={() => handleFilePreview(file, optReceipt, optEAD, I983, I20, feedback)}>preview</u>
                     <u onClick={() => handleFileDownload(file)}>download</u>
                   </div>
                 )))
@@ -257,7 +286,7 @@ function AllEmployeeTable (props) {
 
 export default function HrVisaStatusManagement () {
     const location = useLocation();
-    const type = location.state?.type;
+    const type = location.state?.type || 'all';
     const { token } = useSelector((state) => state.user.info);
 
     const [inProcessList, setInProcessList] = useState([]);

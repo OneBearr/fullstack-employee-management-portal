@@ -729,7 +729,7 @@ export default function PersonalInfo() {
 
       {/* Hr view application */}
       {
-        viewApplication && info.onboardingInfo.status !== "approved" && (
+        isHR && viewApplication && info.onboardingInfo.status !== "approved" && (
           <>
             <div className='text-xl font-bold'>Feedback:</div><br />
             <Input.TextArea className="mb-2" rows={4} placeholder={info.onboardingInfo.feedback} onChange={(e)=>{
@@ -738,9 +738,11 @@ export default function PersonalInfo() {
             <div className="flex gap-4 mb-2">
               <Button type="primary" onClick={async ()=>{
                 await hr_ApproveApplication(id, token);
+                navigate("/hr-dashboard/hiring-management",{state:{type:'review'}});
               }}>Approve</Button>
               <Button onClick={async ()=>{
                 await hr_RejectApplication(id, feedback, token)
+                navigate("/hr-dashboard/hiring-management",{state:{type:'review'}});
               }}>Reject</Button>
             </div>
           </>
