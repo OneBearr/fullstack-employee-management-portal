@@ -136,7 +136,7 @@ function ReviewApplications() {
           dataSource={pendingApplications}
           renderItem={(item) => (
             <List.Item
-              actions={[<Link key="list-view-application" to={`/hr-dashboard/application/${item.user}`} target="_blank">View Application</Link>]}
+              actions={[<Button key="list-view-application" type="primary"><Link to={`/hr-dashboard/application/${item.user}`} target="_blank">View Application</Link></Button>]}
             >
               <p>{item.firstName} {item.middleName || ""} {item.lastName}</p>
               <p>{item.email}</p>
