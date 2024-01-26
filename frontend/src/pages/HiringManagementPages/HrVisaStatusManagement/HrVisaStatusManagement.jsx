@@ -1,4 +1,4 @@
-import { Input, Table, Tag, Button } from "antd";
+import { Input, Table, Tag, Button, message } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import ErrorPage from "../../ErrorPage/ErrorPage";
 import { hr_GetVisaStatusAPI, hr_SendNotification} from "../../../services/hr";
@@ -13,6 +13,7 @@ function InProgressEmployeeTable () {
     const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [messageApi, contextHolder] = message.useMessage();
 
     useEffect (()=>{
         hr_GetVisaStatusAPI(token)
@@ -25,7 +26,13 @@ function InProgressEmployeeTable () {
     },[]);
 
     const sendNotification = async (user, subject, text) => {
-        await hr_SendNotification(user, subject, text, token);
+        try{
+            await hr_SendNotification(user, subject, text, token);
+            messageApi.info("Sent email to the user, please wait for response")
+        }
+        catch (e){
+            messageApi.info(e)
+        }
     };
 
     const columns = [
@@ -182,7 +189,7 @@ function InProgressEmployeeTable () {
         },
     ];
 
-    return (<Table rowKey="user" loading={loading} columns={columns} dataSource={data}></Table>)
+    return (<>{contextHolder}<Table rowKey="user" loading={loading} columns={columns} dataSource={data}></Table></>)
 }
 
 function AllEmployeeTable () {
