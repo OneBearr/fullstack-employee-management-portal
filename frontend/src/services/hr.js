@@ -101,3 +101,40 @@ export const hr_RejectApplication = async (user, text, token) =>{
 
     return responseData;
 }
+
+export const hr_ApproveVisaFile = async (user, token) =>{
+    const response = await fetch(`http://localhost:3000/api/hrVisaStatus/approve/${user}`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json',
+            "x-auth-token": token,
+        },
+    });
+    const responseData = await response.json();
+    if (!response.ok) {
+        throw new Error(
+            responseData.message || `HTTP error! status: ${response.status}`
+        );
+    }
+
+    return responseData;
+}
+
+export const hr_RejectVisaFile = async (user, text ,token) =>{
+    const response = await fetch(`http://localhost:3000/api/hrVisaStatus/reject/${user}`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json',
+            "x-auth-token": token,
+        },
+        body: JSON.stringify({ feedback: text}),
+    });
+    const responseData = await response.json();
+    if (!response.ok) {
+        throw new Error(
+            responseData.message || `HTTP error! status: ${response.status}`
+        );
+    }
+
+    return responseData;
+}

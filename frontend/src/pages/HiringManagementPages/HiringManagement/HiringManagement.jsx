@@ -205,7 +205,7 @@ function ReviewApplications() {
 
 export default function HiringManagement() {
   const location = useLocation();
-  const type = location.state?.type;
+  const type = location.state?.type || 'review';
 
   if (type === "registration") {
     return <Registration></Registration>;

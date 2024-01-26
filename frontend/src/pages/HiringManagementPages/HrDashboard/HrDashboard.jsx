@@ -82,7 +82,7 @@ export default function HrDashboard() {
         <Route path="/hiring-management" element={<HiringManagement />} />
         <Route path="/employee-profile/:id" element={<PersonalInfo></PersonalInfo>}></Route>
         <Route path="/application/:id" element={<PersonalInfo></PersonalInfo>}></Route>
-        <Route path="/document-review/:id" element={<DocumentReview></DocumentReview>}></Route>
+        <Route path="/document/:fileURL" element={<DocumentReview></DocumentReview>}></Route>
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
