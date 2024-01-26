@@ -20,9 +20,9 @@ const getAllVisaStatus = async (req, res, next) => {
             obj.I20 = item.I20;
             obj.user = item.user;
             obj.feedback = item.feedback;
-            obj.onboardingInfo = user.onboardingInfo;
             obj.employmentDetails = user.employmentDetails;
-            obj.name = `${user.firstName} ${user.middleName} ${user.lastName}`;
+            obj.workAuth = user.workAuth;
+            obj.name = `${user.firstName} ${user.middleName || ""} ${user.lastName}`;
             obj.files = files;
 
             results.push(obj);

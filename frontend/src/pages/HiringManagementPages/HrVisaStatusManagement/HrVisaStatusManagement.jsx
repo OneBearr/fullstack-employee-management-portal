@@ -10,6 +10,7 @@ const { Search } = Input;
 
 function InProgressEmployeeTable (props) {
     const { token } = useSelector((state) => state.user.info);
+    const navigate = useNavigate();
 
     const sendNotification = async (user, subject, text) => {
         await hr_SendNotification(user, subject, text, token);
@@ -27,15 +28,22 @@ function InProgressEmployeeTable (props) {
                 {
                     title: "Title",
                     key: "title",
-                    dataIndex: ["employmentDetails", "visaTitle"],
+                    render: (_, {workAuth})=>{
+                        if(workAuth.isCitizen){
+                            return <p>Citizen</p>
+                        }
+                        else{
+                            return <p>{workAuth.workAuthType}</p>
+                        }
+                    }
                 },
                 {
                     title: "Start and End date",
                     key: "date",
                     dataIndex: "employmentDetails",
                     render: (data)=>{
-                        const startDate = moment(data.startDate).format("MM/DD/YYYY");
-                        const endDate = moment(data.endDate).format("MM/DD/YYYY");
+                        const startDate = moment.utc(data.startDate).format("MM/DD/YYYY");
+                        const endDate = moment.utc(data.endDate).format("MM/DD/YYYY");
                         return <p>{startDate} - {endDate}</p>
                     }
                 },
@@ -55,43 +63,43 @@ function InProgressEmployeeTable (props) {
             key: "nextStep",
             render: (_, {optReceipt, optEAD, I983, I20})=>{
                 if(optReceipt.status==="no submit"){
-                    return <Tag color="blue">Waiting for OPT receipt summit</Tag>
+                    return <Tag color="blue">Waiting for OPT receipt submit</Tag>
                 }
                 else if (optReceipt.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve OPT receipt</Tag>
                 }
                 else if (optReceipt.status==="rejected"){
-                    return <Tag color="red">Waiting for OPT receipt resummit</Tag>
+                    return <Tag color="red">Waiting for OPT receipt resubmit</Tag>
                 }
 
                 if(optEAD.status==="no submit"){
-                    return <Tag color="blue">Waiting for OPT EAD summit</Tag>
+                    return <Tag color="blue">Waiting for OPT EAD submit</Tag>
                 }
                 else if (optEAD.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve OPT EAD</Tag>
                 }
                 else if (optEAD.status==="rejected"){
-                    return <Tag color="red">Waiting for OPT EAD resummit</Tag>
+                    return <Tag color="red">Waiting for OPT EAD resubmit</Tag>
                 }
 
                 if(I983.status==="no submit"){
-                    return <Tag color="blue">Waiting for I983 summit</Tag>
+                    return <Tag color="blue">Waiting for I983 submit</Tag>
                 }
                 else if (I983.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve I983</Tag>
                 }
                 else if (I983.status==="rejected"){
-                    return <Tag color="red">Waiting for I983 resummit</Tag>
+                    return <Tag color="red">Waiting for I983 resubmit</Tag>
                 }
 
                 if(I20.status==="no submit"){
-                    return <Tag color="blue">Waiting for I20 summit</Tag>
+                    return <Tag color="blue">Waiting for I20 submit</Tag>
                 }
                 else if (I20.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve I20</Tag>
                 }
                 else if (I20.status==="rejected"){
-                    return <Tag color="red">Waiting for I20 resummit</Tag>
+                    return <Tag color="red">Waiting for I20 resubmit</Tag>
                 }
 
                 return <Tag color="green">All Approved</Tag>
@@ -100,7 +108,34 @@ function InProgressEmployeeTable (props) {
         {
             title: "Action",
             key: "action",
-            render: (_, {user, optReceipt, optEAD, I983, I20})=>{
+            render: (_, {files, user, optReceipt, optEAD, I983, I20, feedback})=>{
+                let viewDocumentId = null; 
+                if(optReceipt.status === "pending"){
+                    viewDocumentId = optReceipt.file;
+                }
+                else if (optEAD.status === "pending"){
+                    viewDocumentId = optEAD.file;
+                }
+                else if (I983.status === "pending"){
+                    viewDocumentId = I983.file;
+                }
+                else if (I20.status === "pending"){
+                    viewDocumentId = I20.file;
+                }
+
+                if(viewDocumentId){
+                    const file = files.filter((item)=> (item._id===viewDocumentId))[0];
+                    return <Button type="primary" onClick={()=>{
+                        navigate(`/hr-dashboard/document/${file.originalFileName}`, {
+                            state:{
+                                file: file,
+                                approved: false,
+                                feedback: feedback
+                            }
+                        });
+                    }}>View Document</Button>
+                }
+
                 let subject = "";
                 let text = "";
                 let flag = false;
@@ -139,6 +174,7 @@ function InProgressEmployeeTable (props) {
 }
 
 function AllEmployeeTable (props) {
+    const [searchText, setSearchText] = useState("");
     const { token } = useSelector((state) => state.user.info);
     const navigate = useNavigate();
 
@@ -191,15 +227,22 @@ function AllEmployeeTable (props) {
                 {
                     title: "Title",
                     key: "title",
-                    dataIndex: ["employmentDetails", "visaTitle"],
+                    render: (_, {workAuth})=>{
+                        if(workAuth.isCitizen){
+                            return <p>Citizen</p>
+                        }
+                        else{
+                            return <p>{workAuth.workAuthType}</p>
+                        }
+                    }
                 },
                 {
                     title: "Start and End date",
                     key: "date",
                     dataIndex: "employmentDetails",
                     render: (data)=>{
-                        const startDate = moment(data.startDate).format("MM/DD/YYYY");
-                        const endDate = moment(data.endDate).format("MM/DD/YYYY");
+                        const startDate = moment.utc(data.startDate).format("MM/DD/YYYY");
+                        const endDate = moment.utc(data.endDate).format("MM/DD/YYYY");
                         return <p>{startDate} - {endDate}</p>
                     }
                 },
@@ -219,43 +262,43 @@ function AllEmployeeTable (props) {
             key: "nextStep",
             render: (_, {optReceipt, optEAD, I983, I20})=>{
                 if(optReceipt.status==="no submit"){
-                    return <Tag color="blue">Waiting for OPT receipt summit</Tag>
+                    return <Tag color="blue">Waiting for OPT receipt submit</Tag>
                 }
                 else if (optReceipt.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve OPT receipt</Tag>
                 }
                 else if (optReceipt.status==="rejected"){
-                    return <Tag color="red">Waiting for OPT receipt resummit</Tag>
+                    return <Tag color="red">Waiting for OPT receipt resubmit</Tag>
                 }
 
                 if(optEAD.status==="no submit"){
-                    return <Tag color="blue">Waiting for OPT EAD summit</Tag>
+                    return <Tag color="blue">Waiting for OPT EAD submit</Tag>
                 }
                 else if (optEAD.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve OPT EAD</Tag>
                 }
                 else if (optEAD.status==="rejected"){
-                    return <Tag color="red">Waiting for OPT EAD resummit</Tag>
+                    return <Tag color="red">Waiting for OPT EAD resubmit</Tag>
                 }
 
                 if(I983.status==="no submit"){
-                    return <Tag color="blue">Waiting for I983 summit</Tag>
+                    return <Tag color="blue">Waiting for I983 submit</Tag>
                 }
                 else if (I983.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve I983</Tag>
                 }
                 else if (I983.status==="rejected"){
-                    return <Tag color="red">Waiting for I983 resummit</Tag>
+                    return <Tag color="red">Waiting for I983 resubmit</Tag>
                 }
 
                 if(I20.status==="no submit"){
-                    return <Tag color="blue">Waiting for I20 summit</Tag>
+                    return <Tag color="blue">Waiting for I20 submit</Tag>
                 }
                 else if (I20.status==="pending"){
                     return <Tag color="yellow">Waiting for HR to approve I20</Tag>
                 }
                 else if (I20.status==="rejected"){
-                    return <Tag color="red">Waiting for I20 resummit</Tag>
+                    return <Tag color="red">Waiting for I20 resubmit</Tag>
                 }
 
                 return <Tag color="green">All Approved</Tag>
@@ -266,7 +309,7 @@ function AllEmployeeTable (props) {
             key: "Documents",
             render: ({files, optReceipt, optEAD, I983, I20, feedback})=>{
                 return (files.map((file, index)=>(
-                <div className='flex justify-between gap-4' key= {index}>
+                <div className='flex justify-between gap-4 border-2 border-rose-600 my-1' key= {index}>
                     <span>{file.originalFileName}</span>
                     <u onClick={() => handleFilePreview(file, optReceipt, optEAD, I983, I20, feedback)}>preview</u>
                     <u onClick={() => handleFileDownload(file)}>download</u>
@@ -278,8 +321,8 @@ function AllEmployeeTable (props) {
 
     return (
     <>
-        <Search placeholder="input search text" allowClear></Search>
-        <Table columns={columns} dataSource={props.data==false? [] : props.data}></Table>
+        <Search className="w-full mt-4 mb-4" placeholder="input search text" allowClear value={searchText} onChange={(e)=>{setSearchText(e.target.value)}}></Search>
+        <Table filter columns={columns} dataSource={props.data==false? [] : props.data}></Table>
     </>
     )
 }
@@ -295,10 +338,8 @@ export default function HrVisaStatusManagement () {
     useEffect (()=>{
         hr_GetVisaStatusAPI(token)
         .then((data)=>{
-            setInProcessList(data.map((item)=>{
-                if(item.onboardingInfo?.status !== "approved"){
-                    return item;
-                }
+            setInProcessList(data.filter((item)=>{
+                return !(item.optReceipt.status === "approved" && item.optEAD.status === "approved" && item.I983.status === "approved" && item.I20.status === "approved")
             }))
             setAllList(data);
         })

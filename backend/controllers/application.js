@@ -19,11 +19,9 @@ const searchApplication = async (req, res, next) => {
 
     try {
         const applications = await PersonalInformation.find();
-        return res.status(200).json(applications.map((item)=>{
-            const name = `( ${item.preferredName} ) ${item.firstName} ${item.middleName} ${item.lastName}`;
-            if(name.toLowerCase().includes(searchName.toLowerCase())){
-                return item;
-            }
+        return res.status(200).json(applications.filter((item)=>{
+            const name = `${item.preferredName || ""} ${item.firstName} ${item.middleName || ""} ${item.lastName}`;
+            return (name.toLowerCase().includes(searchName.toLowerCase()) && item.onboardingInfo.status==="approved")
         }));
     } catch (err) {
         console.error(err.message);
