@@ -81,6 +81,7 @@ export default function EmployeeProfiles() {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const { token } = useSelector((state) => state.user.info);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     {
@@ -133,6 +134,7 @@ export default function EmployeeProfiles() {
             };
           })
         );
+        setLoading(false);
       });
   }, []);
 
@@ -140,6 +142,7 @@ export default function EmployeeProfiles() {
     <>
       <DebounceSearch></DebounceSearch>
       <Table
+        loading={loading}
         columns={columns}
         dataSource={employees}
         onRow={(record) => {
