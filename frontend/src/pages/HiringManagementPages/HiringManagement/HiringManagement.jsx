@@ -109,7 +109,7 @@ function Registration() {
         </form>
       </div>
       <p>History</p>
-      <Table loading={loading} className="max-w-full" columns={columns} dataSource={data}></Table>
+      <Table rowKey="email" loading={loading} className="max-w-full" columns={columns} dataSource={data}></Table>
     </>
   );
 }

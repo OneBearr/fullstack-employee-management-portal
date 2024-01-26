@@ -182,7 +182,7 @@ function InProgressEmployeeTable () {
         },
     ];
 
-    return (<Table loading={loading} columns={columns} dataSource={data}></Table>)
+    return (<Table rowKey="user" loading={loading} columns={columns} dataSource={data}></Table>)
 }
 
 function AllEmployeeTable () {
@@ -363,7 +363,7 @@ function AllEmployeeTable () {
         <Search className="w-full mt-4 mb-4" placeholder="input search text" allowClear
             onChange={onSearch}>
         </Search>
-        <Table loading={loading} columns={columns} dataSource={data}></Table>
+        <Table rowKey="user" loading={loading} columns={columns} dataSource={data}></Table>
     </>
     )
 }
