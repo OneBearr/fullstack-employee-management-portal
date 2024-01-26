@@ -39,7 +39,7 @@ export default function SearchBar() {
         setFetching(false);
       });
     };
-    return debounce(loadOptions, 800);
+    return debounce(loadOptions, 1000);
   }, []);
 
   async function searchUserList(username) {
