@@ -5,7 +5,7 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Input, message } from "antd";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchUserInfo } from '../../redux/user/userSlice';
@@ -18,7 +18,6 @@ const AuthForm = (props) => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { isHR } = useSelector((state) => state.user.info);
     const { error, loading } = useSelector((state) => state.user);
 
     useEffect(() => {
@@ -51,10 +50,13 @@ const AuthForm = (props) => {
 
         if (type === 'login') {
             try {
-                await dispatch(fetchUserInfo({ username, password })).unwrap();
+                const response = await dispatch(fetchUserInfo({ username, password })).unwrap();
+                if (response.isHR) {
+                    navigate("/hr-dashboard");
+                } else {
+                    navigate("/employee-dashboard");
+                }
                 message.success('Logged in successfully!');
-                if (!isHR) navigate("/employee-dashboard");
-                // else go to HR dashboard
             } catch (error) {
                 console.error(error.message)
                 message.error(`Login failed`);
