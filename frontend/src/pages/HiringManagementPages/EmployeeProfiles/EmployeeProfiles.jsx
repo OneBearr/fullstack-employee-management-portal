@@ -72,6 +72,7 @@ export default function EmployeeProfiles() {
         loading={loading}
         columns={columns}
         dataSource={employees}
+        rowKey="id"
         onRow={(record) => {
           return {
             onClick: () => {
