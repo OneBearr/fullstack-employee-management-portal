@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import ErrorPage from "../../ErrorPage/ErrorPage";
-import { Tabs, List, Input, Button, Table, Tag } from "antd";
+import { Tabs, List, Input, Button, Table, Tag, message } from "antd";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form"
@@ -9,6 +9,7 @@ import moment from "moment";
 function Registration() {
   const { token } = useSelector((state) => state.user.info);
   const [loading, setLoading] = useState(true);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -62,6 +63,16 @@ function Registration() {
   const [data, setData] = useState([]);
 
   const onSubmit = ({email}) => {
+    if(!email || !email.trim()){
+      messageApi.info("Email is required!");
+      return;
+    }
+    let reg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(!reg.test(email)){
+      messageApi.info("Please enter a valid email!");
+      return;
+    }
+    
     fetch("http://localhost:3000/auth/request-register", {
       method: "POST",
       headers: {
@@ -72,9 +83,11 @@ function Registration() {
         email: email
       }),
     })
-    .then((res)=>res.json())
-    .then((data)=>{
-      console.log(data);
+    .then(()=>{
+      messageApi.info("We have sent email for your register, please check your inbox");
+    })
+    .catch((e)=>{
+      messageApi.info(e);
     })
   };
 
@@ -98,6 +111,7 @@ function Registration() {
 
   return (
     <>
+      {contextHolder}
       <div>
         <form className="flex gap-4 mt-4 mb-4">
             <Controller
