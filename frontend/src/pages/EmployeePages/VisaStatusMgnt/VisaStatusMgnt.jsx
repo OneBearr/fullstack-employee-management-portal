@@ -10,8 +10,8 @@ export default function VisaStatusMgnt() {
   const navigate = useNavigate();
   const { token } = useSelector((state) => state.user.info);
   const { status: applicationStatus } = useSelector((state) => state.personalInfo.info.onboardingInfo ?? {});
-  const { files } = useSelector((state) => state.personalFiles);
-  const { visaStatus, loading } = useSelector((state) => state.employeeVisaStatus);
+  const { files, loading: filesLoading } = useSelector((state) => state.personalFiles);
+  const { visaStatus, loading: visaStatusLoading } = useSelector((state) => state.employeeVisaStatus);
   const [fileList, setFileList] = useState([]);
 
   const optReceiptFile = visaStatus.optReceipt.file ? files.find(file => file._id === visaStatus.optReceipt.file) : {};
@@ -45,7 +45,7 @@ export default function VisaStatusMgnt() {
     setFileList([]);
   };
 
-  if (loading) {
+  if (filesLoading || visaStatusLoading) {
     return <div className='flex justify-center pt-80'>Loading...</div>;
   }
   return (
