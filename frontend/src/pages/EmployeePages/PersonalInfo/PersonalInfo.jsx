@@ -415,7 +415,7 @@ export default function PersonalInfo() {
                       <Select>
                         <Option value="H1B">H1-B</Option>
                         <Option value="L2">L2</Option>
-                        <Option value="F1CPTOPT">F1 (CPT/OPT)</Option>
+                        <Option value="F1-CPT/OPT">F1 (CPT/OPT)</Option>
                         <Option value="H4">H4</Option>
                         <Option value="other">Other</Option>
                       </Select>
